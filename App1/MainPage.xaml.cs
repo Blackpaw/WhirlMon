@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -24,20 +25,32 @@ namespace WhirlMonApp
     /// 
     public sealed partial class MainPage : Page
     {
-        public ObservableCollection<String> watchedItems = new ObservableCollection<String>();
+        static public ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED> watchedItems = new ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>();
+
+        static private SynchronizationContext synchronizationContext;
 
         public MainPage()
         {
             this.InitializeComponent();
-
-            watchedItems.Add("Watched Item 1");
-            watchedItems.Add("Watched Item 2");
-            watchedItems.Add("Watched Item 3");
-            watchedItems.Add("Watched Item 4");
+            synchronizationContext = SynchronizationContext.Current;
 
             lvWatched.DataContext = watchedItems;
 
             WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+        }
+
+        static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
+        {
+            synchronizationContext.Post(new SendOrPostCallback(o =>
+            {
+                var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
+
+                watchedItems.Clear();
+                foreach (var item in r.WATCHED)
+                {
+                    watchedItems.Add(item);
+                }
+            }), root);
         }
     }
 }

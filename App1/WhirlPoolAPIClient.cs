@@ -26,7 +26,7 @@ namespace WhirlMon
         {
             try
             {
-                String url = APIUrl("watched") + "&watchedmode=1";
+                String url = APIUrl("watched") + "&watchedmode=0";
 
                 var asyncClient = new HttpClient();
                 asyncClient.DefaultRequestHeaders.Add("User-Agent",
@@ -38,7 +38,10 @@ namespace WhirlMon
                 using (var ms = new MemoryStream(Encoding.Unicode.GetBytes(json)))
                 {
                     var data = (WhirlPoolAPIData.RootObject)serializer.ReadObject(ms);
+                    WhirlMonApp.MainPage.UpdateUIData(data);
                 }
+
+               
             }
             catch(Exception x)
             {
