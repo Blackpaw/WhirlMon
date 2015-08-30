@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,6 +44,8 @@ namespace WhirlMon
             public string TITLE { get; set; }
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
+
+            public string TITLE_DECODED { get { return WebUtility.HtmlDecode(TITLE); }}
         }
 
         public class FIRST2
@@ -69,6 +72,8 @@ namespace WhirlMon
             public string TITLE { get; set; }
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
+
+            public string TITLE_DECODED { get { return WebUtility.HtmlDecode(TITLE); } }
         }
 
         public class RootObject

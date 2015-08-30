@@ -24,7 +24,7 @@
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE}"/>
+                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}"/>
                                 <TextBlock Grid.Column="1" Text="{Binding UNREAD}"/>
                             </Grid>
                         </DataTemplate>
