@@ -9,13 +9,19 @@ namespace WhirlMon
 {
     public class WhirlPoolAPIData
     {
-        public class NEWS
+        public class BASE
+        {
+            public int ID { get; set; }
+            public string TITLE { get; set; }
+
+            public string TITLE_DECODED { get { return WebUtility.HtmlDecode(TITLE); } }
+        }
+
+        public class NEWS : BASE
         {
             public string DATE { get; set; }
             public string SOURCE { get; set; }
             public string BLURB { get; set; }
-            public int ID { get; set; }
-            public string TITLE { get; set; }
         }
 
         public class FIRST
@@ -30,7 +36,7 @@ namespace WhirlMon
             public int ID { get; set; }
         }
 
-        public class WATCHED
+        public class WATCHED : BASE
         {
             public string LAST_DATE { get; set; }
             public FIRST FIRST { get; set; }
@@ -39,13 +45,9 @@ namespace WhirlMon
             public int LASTREAD { get; set; }
             public int FORUM_ID { get; set; }
             public int UNREAD { get; set; }
-            public int ID { get; set; }
             public int LASTPAGE { get; set; }
-            public string TITLE { get; set; }
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
-
-            public string TITLE_DECODED { get { return WebUtility.HtmlDecode(TITLE); }}
         }
 
         public class FIRST2
@@ -60,7 +62,7 @@ namespace WhirlMon
             public int ID { get; set; }
         }
 
-        public class RECENT
+        public class RECENT : BASE
         {
             public string LAST_DATE { get; set; }
             public FIRST2 FIRST { get; set; }
@@ -68,12 +70,9 @@ namespace WhirlMon
             public LAST2 LAST { get; set; }
             public int FORUM_ID { get; set; }
             public int REPLIES_BY_USER { get; set; }
-            public int ID { get; set; }
-            public string TITLE { get; set; }
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
 
-            public string TITLE_DECODED { get { return WebUtility.HtmlDecode(TITLE); } }
         }
 
         public class RootObject
