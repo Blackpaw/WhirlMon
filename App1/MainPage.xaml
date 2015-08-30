@@ -9,14 +9,38 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot>
+            <!-- Watched -->
             <PivotItem Header="Watched">
-                <ListView x:Name="lvWatched" ItemsSource="{Binding}"/>
+                <ListView x:Name="lvWatched" ItemsSource="{Binding}">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding TITLE}"/>
+                                <TextBlock Grid.Column="1" Text="{Binding UNREAD}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </PivotItem>
+
+            <!-- News -->
             <PivotItem Header="News">
-                <Grid/>
+                <PivotItem Header="Watched">
+                </PivotItem>
             </PivotItem>
+
+            <!-- Recent -->
             <PivotItem Header="Recent">
-                <Grid/>
+                <ListView x:Name="lvRecent" ItemsSource="{Binding}" DisplayMemberPath="TITLE"/>
             </PivotItem>
         </Pivot>
 

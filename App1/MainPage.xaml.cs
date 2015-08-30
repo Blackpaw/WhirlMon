@@ -35,6 +35,7 @@ namespace WhirlMonApp
             synchronizationContext = SynchronizationContext.Current;
 
             lvWatched.DataContext = watchedItems;
+            lvRecent.DataContext = watchedItems;
 
             WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
         }
