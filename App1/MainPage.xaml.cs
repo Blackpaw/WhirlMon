@@ -36,6 +36,8 @@ namespace WhirlMonApp
             watchedItems.Add("Watched Item 4");
 
             lvWatched.DataContext = watchedItems;
+
+            WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
         }
     }
 }
