@@ -11,7 +11,7 @@
         <Pivot>
             <!-- Watched -->
             <PivotItem Header="Watched">
-                <ListView x:Name="lvWatched" ItemsSource="{Binding}">
+                <ListView x:Name="lvWatched" ItemsSource="{Binding}" Padding="2">
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -24,8 +24,14 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}"/>
-                                <TextBlock Grid.Column="1" Text="{Binding UNREAD}"/>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold"/>
+                                <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right"/>
+                                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding LAST.NAME}"/>
+                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
