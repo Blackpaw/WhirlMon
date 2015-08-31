@@ -7,11 +7,22 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" Height="630.062">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Pivot>
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Top">
+        <Pivot VerticalAlignment="Top">
             <!-- Watched -->
-            <PivotItem Header="Watched">
-                <ListView x:Name="lvWatched" ItemsSource="{Binding}" Padding="2">
+            <PivotItem Header="Watched" VerticalAlignment="Top">
+                <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}" Padding="2">
+                    <ListView.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Forums}" FontWeight="Bold"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                        </GroupStyle>
+                    </ListView.GroupStyle>
+
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -28,7 +39,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold"/>
+                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}"/>
                                 <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right"/>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding LAST.NAME}"/>
                                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right"/>
@@ -40,13 +51,10 @@
 
             <!-- News -->
             <PivotItem Header="News">
-                <PivotItem Header="Watched">
-                </PivotItem>
             </PivotItem>
 
             <!-- Recent -->
             <PivotItem Header="Recent">
-                <ListView x:Name="lvRecent" ItemsSource="{Binding}" DisplayMemberPath="TITLE"/>
             </PivotItem>
         </Pivot>
 

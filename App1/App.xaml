@@ -5,4 +5,10 @@
     xmlns:local="using:WhirlMonApp"
     RequestedTheme="Light">
 
+    <Application.Resources>
+        <ResourceDictionary>
+            <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
+        </ResourceDictionary>
+    </Application.Resources>
+
 </Application>

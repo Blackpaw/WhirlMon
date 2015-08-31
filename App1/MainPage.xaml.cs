@@ -25,7 +25,8 @@ namespace WhirlMonApp
     /// 
     public sealed partial class MainPage : Page
     {
-        static public ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED> watchedItems = new ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>();
+        public class WatchedList : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>{}
+
 
         static private SynchronizationContext synchronizationContext;
 
@@ -34,10 +35,16 @@ namespace WhirlMonApp
             this.InitializeComponent();
             synchronizationContext = SynchronizationContext.Current;
 
-            lvWatched.DataContext = watchedItems;
-            lvRecent.DataContext = watchedItems;
-
             WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+        }
+
+        public class ForumsGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
+        {
+            public ForumsGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
+            {
+            }
+
+            public string Forums { get; set; }
         }
 
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
@@ -46,11 +53,17 @@ namespace WhirlMonApp
             {
                 var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
 
-                watchedItems.Clear();
-                foreach (var item in r.WATCHED)
-                {
-                    watchedItems.Add(item);
-                }
+                IEnumerable<ForumsGroup> groups =
+                    from item in r.WATCHED
+                    group item by item.FORUM_NAME into forumGroup
+                    select new ForumsGroup(forumGroup)
+                    {
+                        Forums = forumGroup.Key
+                    };
+
+                
+                var cvsWatched = (CollectionViewSource)Application.Current.Resources["srcWatched"];
+                cvsWatched.Source = groups.ToList();
             }), root);
         }
     }
