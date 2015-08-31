@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Globalization;
 
 namespace WhirlMon
 {
@@ -14,6 +15,13 @@ namespace WhirlMon
         const int HOUR = 60 * MINUTE;
         const int DAY = 24 * HOUR;
         const int MONTH = 30 * DAY;
+
+        static public String ToShortDate(DateTime d)
+        {
+            GeographicRegion userRegion = new GeographicRegion();
+            var userDateFormat = new Windows.Globalization.DateTimeFormatting.DateTimeFormatter("shortdate", new[] { userRegion.Code });
+            return userDateFormat.Format(d);
+        }
 
         static public String Get(DateTime yourDate)
         {
@@ -75,6 +83,8 @@ namespace WhirlMon
             public string DATE { get; set; }
             public string SOURCE { get; set; }
             public string BLURB { get; set; }
+            public DateTime DATE_D { get {return DateTime.Parse(DATE); } }
+            public string DATE_S {  get { return PrettyDate.ToShortDate(DATE_D); } }
         }
 
         public class FIRST

@@ -38,13 +38,22 @@ namespace WhirlMonApp
             WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
         }
 
-        public class ForumsGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
+        public class WatchedForumsGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
         {
-            public ForumsGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
+            public WatchedForumsGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
             {
             }
 
             public string Forums { get; set; }
+        }
+
+        public class NewsDateGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.NEWS>
+        {
+            public NewsDateGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.NEWS> items) : base(items)
+            {
+            }
+
+            public string Date { get; set; }
         }
 
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
@@ -53,17 +62,28 @@ namespace WhirlMonApp
             {
                 var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
 
-                IEnumerable<ForumsGroup> groups =
+                // Watched
+                IEnumerable<WatchedForumsGroup> watched =
                     from item in r.WATCHED
                     group item by item.FORUM_NAME into forumGroup
-                    select new ForumsGroup(forumGroup)
+                    select new WatchedForumsGroup(forumGroup)
                     {
                         Forums = forumGroup.Key
-                    };
-
-                
+                    };                
                 var cvsWatched = (CollectionViewSource)Application.Current.Resources["srcWatched"];
-                cvsWatched.Source = groups.ToList();
+                cvsWatched.Source = watched.ToList();
+
+                // news
+                IEnumerable<NewsDateGroup> news =
+                    from item in r.NEWS
+                    group item by item.DATE_D.DayOfWeek.ToString() into dateGroup
+                    select new NewsDateGroup(dateGroup)
+                    {
+                        Date = dateGroup.Key
+                    };
+                var cvsNews = (CollectionViewSource)Application.Current.Resources["srcNews"];
+                cvsNews.Source = news.ToList();
+
             }), root);
         }
     }

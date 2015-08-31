@@ -8,6 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
+            <CollectionViewSource x:Key="srcNews" IsSourceGrouped="True" />
         </ResourceDictionary>
     </Application.Resources>
 

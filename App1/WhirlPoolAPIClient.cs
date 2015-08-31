@@ -26,7 +26,7 @@ namespace WhirlMon
         {
             try
             {
-                String url = APIUrl("watched") + "&watchedmode=0";
+                String url = APIUrl("watched+news") + "&watchedmode=0";
 
                 var asyncClient = new HttpClient();
                 asyncClient.DefaultRequestHeaders.Add("User-Agent",
