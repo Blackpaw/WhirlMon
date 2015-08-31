@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Globalization;
+using Windows.Globalization.DateTimeFormatting;
 
 namespace WhirlMon
 {
@@ -16,10 +17,16 @@ namespace WhirlMon
         const int DAY = 24 * HOUR;
         const int MONTH = 30 * DAY;
 
+        static private GeographicRegion userRegion = null;
+        static private DateTimeFormatter userDateFormat = null;
+
         static public String ToShortDate(DateTime d)
         {
-            GeographicRegion userRegion = new GeographicRegion();
-            var userDateFormat = new Windows.Globalization.DateTimeFormatting.DateTimeFormatter("shortdate", new[] { userRegion.Code });
+            if (userRegion == null)
+            {
+                userRegion = new GeographicRegion();
+                userDateFormat = new Windows.Globalization.DateTimeFormatting.DateTimeFormatter("shortdate", new[] { userRegion.Code });
+            }
             return userDateFormat.Format(d);
         }
 

@@ -53,7 +53,9 @@ namespace WhirlMonApp
             {
             }
 
-            public string Date { get; set; }
+            public DateTime Date { get; set; }
+            public string DOW { get { return Date.DayOfWeek.ToString(); } }
+            public string SHORTDATE { get { return WhirlMon.PrettyDate.ToShortDate(Date); } }
         }
 
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
@@ -76,7 +78,7 @@ namespace WhirlMonApp
                 // news
                 IEnumerable<NewsDateGroup> news =
                     from item in r.NEWS
-                    group item by item.DATE_D.DayOfWeek.ToString() into dateGroup
+                    group item by item.DATE_D.Date into dateGroup
                     select new NewsDateGroup(dateGroup)
                     {
                         Date = dateGroup.Key

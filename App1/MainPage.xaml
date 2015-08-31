@@ -54,33 +54,35 @@
                 <ListView x:Name="lvNews"  ItemsSource="{Binding Source={StaticResource srcNews}}" Padding="2">
                     <ListView.GroupStyle>
                         <GroupStyle>
+                            <GroupStyle.HeaderContainerStyle>
+                                <Style TargetType="ListViewHeaderItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                </Style>
+                            </GroupStyle.HeaderContainerStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Date}" FontWeight="Bold"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding DOW}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="1" Text="{Binding SHORTDATE}" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                    </Grid>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </ListView.GroupStyle>
 
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold"/>
-                                <TextBlock Grid.Column="1" Text="{Binding DATE_S}" HorizontalAlignment="Right"/>
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding BLURB}" TextWrapping="WrapWholeWords"/>
+                                <TextBlock Grid.Row="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold"/>
+                                <TextBlock Grid.Row="1" Text="{Binding BLURB}" TextWrapping="WrapWholeWords"/>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
