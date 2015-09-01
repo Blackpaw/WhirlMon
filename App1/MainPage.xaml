@@ -5,19 +5,19 @@
     xmlns:local="using:WhirlMonApp"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" Height="630.062">
+    mc:Ignorable="d">
 
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}" VerticalAlignment="Top">
-        <Pivot VerticalAlignment="Top">
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Pivot>
             <!-- Watched -->
-            <PivotItem Header="Watched" VerticalAlignment="Top">
+            <PivotItem Header="Watched">
                 <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}" Padding="2">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Forums}" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Forum}" FontWeight="Bold" Tapped="lvWatchedForum_Tapped" Tag="{Binding forumId}"/>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
@@ -30,7 +30,7 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid Tapped="lvWatched_Tapped">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
@@ -76,7 +76,7 @@
 
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid>
+                            <Grid Tapped="News_Tapped">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
