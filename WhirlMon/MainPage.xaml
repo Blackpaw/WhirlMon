@@ -12,7 +12,7 @@
         <Pivot>
             <!-- Watched -->
             <PivotItem Header="Watched">
-                <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}" Padding="2">
+                <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
@@ -30,7 +30,7 @@
                     </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Tapped="lvWatched_Tapped">
+                            <Grid Tapped="lvWatched_Tapped" Padding="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="auto"/>
@@ -39,7 +39,7 @@
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}"/>
+                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
                                 <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right"/>
                                 <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding LAST.NAME}"/>
                                 <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right"/>
@@ -51,7 +51,7 @@
 
             <!-- News -->
             <PivotItem Header="News">
-                <ListView x:Name="lvNews"  ItemsSource="{Binding Source={StaticResource srcNews}}" Padding="2">
+                <ListView x:Name="lvNews"  ItemsSource="{Binding Source={StaticResource srcNews}}">
                     <ListView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderContainerStyle>
@@ -74,15 +74,31 @@
                         </GroupStyle>
                     </ListView.GroupStyle>
 
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Tapped="News_Tapped">
+                            <Grid Tapped="News_Tapped" Padding="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="auto"/>
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold"/>
+                                <!-- <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold" Foreground="Cyan"/>
+                                <TextBlock Grid.Column="1" Text="{Binding SOURCE}" HorizontalAlignment="Right"/> -->
+                                <TextBlock>
+                                    <Run Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
+                                    <Run Text=" - "/>
+                                    <Run Text="{Binding SOURCE}"/>
+                                </TextBlock>
                                 <TextBlock Grid.Row="1" Text="{Binding BLURB}" TextWrapping="WrapWholeWords"/>
+                                
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
