@@ -43,7 +43,7 @@ namespace WhirlMon
 
                
             }
-            catch(Exception x)
+            catch(Exception)
             {
                 // ?
             }
