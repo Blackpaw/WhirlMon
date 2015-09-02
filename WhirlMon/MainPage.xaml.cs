@@ -118,5 +118,10 @@ namespace WhirlMonApp
             var success = await Windows.System.Launcher.LaunchUriAsync(uri);
 
         }
+
+        private void Refresh_Click(object sender, RoutedEventArgs e)
+        {
+            WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+        }
     }
 }

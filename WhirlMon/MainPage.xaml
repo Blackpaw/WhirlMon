@@ -11,9 +11,12 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot>
             <Pivot.RightHeader>
-                <AppBarButton Icon="Setting"/>
+                <StackPanel Orientation="Horizontal">
+                    <AppBarButton Icon="Refresh" Click="Refresh_Click"/>
+                    <AppBarButton Icon="Setting"/>
+                </StackPanel>
             </Pivot.RightHeader>
-
+    
             <!-- Watched -->
             <PivotItem Header="Watched">
                 <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}">
