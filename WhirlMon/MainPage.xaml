@@ -10,6 +10,10 @@
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot>
+            <Pivot.RightHeader>
+                <AppBarButton Icon="Setting"/>
+            </Pivot.RightHeader>
+
             <!-- Watched -->
             <PivotItem Header="Watched">
                 <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}">
