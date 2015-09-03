@@ -40,9 +40,9 @@ namespace WhirlMonApp
             
         }
 
-        public class WatchedForumsGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
+        public class WatchedThreads : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
         {
-            public WatchedForumsGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
+            public WatchedThreads(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
             {
             }
 
@@ -50,15 +50,25 @@ namespace WhirlMonApp
             public string Forum { get; set; }
         }
 
-        public class NewsDateGroup : ObservableCollection<WhirlMon.WhirlPoolAPIData.NEWS>
+        public class ThreadForumGroup : ObservableCollection<WatchedThreads>
         {
-            public NewsDateGroup(IEnumerable<WhirlMon.WhirlPoolAPIData.NEWS> items) : base(items)
+            public ThreadForumGroup(IEnumerable<WatchedThreads> items) : base(items) { }
+        }
+
+        public class NewsItems : ObservableCollection<WhirlMon.WhirlPoolAPIData.NEWS>
+        {
+            public NewsItems(IEnumerable<WhirlMon.WhirlPoolAPIData.NEWS> items) : base(items)
             {
             }
 
             public DateTime Date { get; set; }
             public string DOW { get { return Date.DayOfWeek.ToString(); } }
             public string SHORTDATE { get { return WhirlMon.PrettyDate.ToShortDate(Date); } }
+        }
+
+        public class NewsDateGroup : ObservableCollection<NewsItems>
+        {
+            public NewsDateGroup(IEnumerable<NewsItems> items) : base(items) { }
         }
 
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
@@ -68,27 +78,36 @@ namespace WhirlMonApp
                 var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
 
                 // Watched
-                IEnumerable<WatchedForumsGroup> watched =
-                    from item in r.WATCHED
-                    group item by item.FORUM_NAME into forumGroup
-                    select new WatchedForumsGroup(forumGroup)
+                if (r.WATCHED != null)
+                {
+                    // new
+                    IEnumerable<WatchedThreads> watched =
+                        from item in r.WATCHED
+                        group item by item.FORUM_NAME into threadGroup
+                        select new WatchedThreads(threadGroup)
+                        {
+                            Forum = threadGroup.Key,
+                            forumId = threadGroup.ElementAtOrDefault(0).FORUM_ID
+                        };
+                    var cvsWatched = (CollectionViewSource)Application.Current.Resources["srcWatched"];
+                    if (cvsWatched.Source == null)
+                        cvsWatched.Source = new ThreadForumGroup(watched);
+                    else
                     {
-                        Forum = forumGroup.Key,
-                        forumId = forumGroup.ElementAtOrDefault(0).FORUM_ID
-                    };                
-                var cvsWatched = (CollectionViewSource)Application.Current.Resources["srcWatched"];
-                cvsWatched.Source = watched.ToList();
+
+                    }
+                }
 
                 // news
-                IEnumerable<NewsDateGroup> news =
+                IEnumerable<NewsItems> news =
                     from item in r.NEWS
-                    group item by item.DATE_D.Date into dateGroup
-                    select new NewsDateGroup(dateGroup)
+                    group item by item.DATE_D.Date into newsGroup
+                    select new NewsItems(newsGroup)
                     {
-                        Date = dateGroup.Key
+                        Date = newsGroup.Key
                     };
                 var cvsNews = (CollectionViewSource)Application.Current.Resources["srcNews"];
-                cvsNews.Source = news.ToList();
+                cvsNews.Source = new NewsDateGroup(news);
 
             }), root);
         }
@@ -119,9 +138,20 @@ namespace WhirlMonApp
 
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private async void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+            //WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+            try
+            {
+                var cvsWatched = (CollectionViewSource)Application.Current.Resources["srcWatched"];
+                ObservableCollection<WatchedThreads> ws = (ObservableCollection<WatchedThreads>)cvsWatched.Source;
+                ws.RemoveAt(0);
+            }
+            catch(Exception x)
+            {
+                var dialog = new MessageDialog(x.Message, "Error");
+                await dialog.ShowAsync();
+            }
         }
     }
 }
