@@ -128,6 +128,14 @@ namespace WhirlMon
                     return PrettyDate.Get(d) + " " + d.ToString("h:mm");
                 }
             }
+
+            public bool Equals(WATCHED w)
+            {
+                return
+                    LAST_DATE == w.LAST_DATE &&
+                    UNREAD == w.UNREAD &&
+                    LAST.ID == w.LAST.ID;
+            }
         }
 
         public class FIRST2
