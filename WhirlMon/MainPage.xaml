@@ -38,18 +38,26 @@
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Tapped="lvWatched_Tapped" Padding="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
-                                <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right"/>
-                                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding LAST.NAME}"/>
-                                <TextBlock Grid.Column="1" Grid.Row="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right"/>
+                                <Grid Grid.Row="0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
+                                </Grid>
+                                <Grid Grid.Row="1">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding LAST.NAME}" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
+                                </Grid>
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -99,7 +107,7 @@
                                 </Grid.RowDefinitions>
                                 <!-- <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold" Foreground="Cyan"/>
                                 <TextBlock Grid.Column="1" Text="{Binding SOURCE}" HorizontalAlignment="Right"/> -->
-                                <TextBlock>
+                                <TextBlock  TextTrimming="CharacterEllipsis">
                                     <Run Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
                                     <Run Text=" - "/>
                                     <Run Text="{Binding SOURCE}"/>
