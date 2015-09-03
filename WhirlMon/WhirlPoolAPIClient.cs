@@ -11,12 +11,13 @@ namespace WhirlMon
 {
     public class WhirlPoolAPIClient
     {
-        static public String APIKey { get; set; }
+        //static public String APIKey { get; set; }
+
+        static public string APIKey = "79947-309525-784";
+
 
         static private String APIUrl(String contentType)
         {
-            APIKey = "79947-309525-784";
-
             return String.Format("http://whirlpool.net.au/api/?key={0}&get={1}&output=json", APIKey, contentType);
         }
 
@@ -45,9 +46,29 @@ namespace WhirlMon
             }
             catch(Exception)
             {
-                // ?
+                // TODO - Log error
             }
         }
 
+        static public async void MarkThreadReadAsync(int id, bool issueRefresh)
+        {
+            try
+            {
+                string url = String.Format("http://whirlpool.net.au/api/?key={0}&watchedread={1}", APIKey, id);
+
+                var asyncClient = new HttpClient();
+                asyncClient.DefaultRequestHeaders.Add("User-Agent",
+                                 "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident / 6.0)");
+                String json = await asyncClient.GetStringAsync(url);
+
+                if (issueRefresh)
+                    GetWatchedAsync(true);
+
+            }
+            catch (Exception)
+            {
+                // TODO - Log error
+            }
+        }
     }
 }

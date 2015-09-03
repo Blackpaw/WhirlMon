@@ -47,7 +47,8 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan" TextTrimming="CharacterEllipsis">
+                                    </TextBlock>
                                     <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
                                 </Grid>
                                 <Grid Grid.Row="1">

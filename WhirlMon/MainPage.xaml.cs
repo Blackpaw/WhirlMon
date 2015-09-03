@@ -182,6 +182,8 @@ namespace WhirlMonApp
                    string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", w.ID, w.LASTPAGE, w.LASTREAD);
             var uri = new Uri(url);
             var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+            if (success)
+                WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(w.ID, true);
         }
 
         private async void lvWatchedForum_Tapped(object sender, TappedRoutedEventArgs e)
