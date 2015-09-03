@@ -111,8 +111,8 @@ namespace WhirlMonApp
                                 continue;
                             }
 
-                            // Check threads in group
-                            for(var tIdx = grp.Count - 1; tIdx >= 0; tIdx--)
+                            // Check exisiting threads in group
+                            for (var tIdx = grp.Count - 1; tIdx >= 0; tIdx--)
                             {
                                 WhirlMon.WhirlPoolAPIData.WATCHED wItem = grp[tIdx];
                                 var _w = _grp.SingleOrDefault(w => w.ID == wItem.ID);
@@ -131,6 +131,30 @@ namespace WhirlMonApp
                                     wItem.UNREAD = _w.UNREAD;
                                     grp[tIdx] = wItem;
                                 }
+                            }
+
+                            // Check for new Threads
+                            for (var tIdx = _grp.Count - 1; tIdx >= 0; tIdx--)
+                            {
+                                WhirlMon.WhirlPoolAPIData.WATCHED wItem = _grp[tIdx];
+                                var _w = grp.SingleOrDefault(w => w.ID == wItem.ID);
+                                if (_w == null)
+                                {
+                                    // Add thread
+                                    grp.Add(wItem);
+                                }
+                            }
+                        }
+
+                        // Check for new Groups
+                        for (int gIdx = grpWatched.Count - 1; gIdx >= 0; gIdx--)
+                        {
+                            WatchedThreads grp = grpWatched[gIdx];
+                            var _grp = current.SingleOrDefault(g => g.forumId == grp.forumId);
+                            if (_grp == null)
+                            {
+                                // Add
+                                current.Add(grp);
                             }
                         }
                     }
