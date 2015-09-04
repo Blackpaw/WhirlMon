@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -31,13 +33,49 @@ namespace WhirlMonApp
 
         static private SynchronizationContext synchronizationContext;
 
+        static Timer tmRefresh = null;
+
         public MainPage()
         {
             this.InitializeComponent();
             synchronizationContext = SynchronizationContext.Current;
 
-            WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
-            
+            tmRefresh = new Timer(TimerRefresh, this, 1000, 1000 * 60 * 5);
+
+            Window.Current.VisibilityChanged += Current_VisibilityChanged;
+        }
+
+        private void Current_VisibilityChanged(object sender, Windows.UI.Core.VisibilityChangedEventArgs e)
+        {
+            if (e.Visible)
+                ClearToast();
+        }
+
+        private void TimerRefresh(object o)
+        {
+            DoRefresh();
+        }
+
+        public async void DoRefresh()
+        {
+            synchronizationContext.Post(new SendOrPostCallback(o =>
+            {
+                progRing.IsActive = true;
+                bnRefresh.Visibility = Visibility.Collapsed;
+            }), null);
+
+            try
+            {
+                await WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+            }
+            finally
+            {
+                synchronizationContext.Post(new SendOrPostCallback(o =>
+                {
+                    progRing.IsActive = false;
+                    bnRefresh.Visibility = Visibility.Visible;
+                }), null);
+            }
         }
 
         public class WatchedThreads : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
@@ -76,6 +114,8 @@ namespace WhirlMonApp
             synchronizationContext.Post(new SendOrPostCallback(o =>
             {
                 var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
+
+                int newMsgs = 0;
 
                 // Watched
                 if (r.WATCHED != null)
@@ -126,6 +166,7 @@ namespace WhirlMonApp
                                 // Update?
                                 if (!wItem.Equals(_w))
                                 {
+                                    newMsgs += (_w.UNREAD - wItem.UNREAD);
                                     wItem.LAST = _w.LAST;
                                     wItem.LAST_DATE = _w.LAST_DATE;
                                     wItem.UNREAD = _w.UNREAD;
@@ -142,6 +183,7 @@ namespace WhirlMonApp
                                 {
                                     // Add thread
                                     grp.Add(wItem);
+                                    newMsgs += wItem.UNREAD;
                                 }
                             }
                         }
@@ -155,9 +197,16 @@ namespace WhirlMonApp
                             {
                                 // Add
                                 current.Add(grp);
+                                foreach(var wItem in grp)
+                                    newMsgs += wItem.UNREAD;
                             }
                         }
                     }
+                }
+                if (newMsgs > 0)
+                {
+                    string toastText = string.Format("{0} new messages", newMsgs);
+                    ShowToast(toastText);
                 }
 
                 // news
@@ -204,7 +253,34 @@ namespace WhirlMonApp
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+            DoRefresh();
+        }
+
+        static ToastNotifier m_tn = null;
+        static ToastNotification lastToast = null;
+
+        static public void ClearToast()
+        {
+            if (lastToast != null)
+            {
+                m_tn.Hide(lastToast);
+                lastToast = null;
+            }
+        }
+
+        static void ShowToast(string toastText)
+        {
+            if (m_tn == null)
+                m_tn = ToastNotificationManager.CreateToastNotifier();
+
+            ClearToast();
+
+            ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
+            XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
+            XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+            toastTextElements[0].AppendChild(toastXml.CreateTextNode(toastText));
+            lastToast = new ToastNotification(toastXml);
+            m_tn.Show(lastToast);
         }
     }
 }

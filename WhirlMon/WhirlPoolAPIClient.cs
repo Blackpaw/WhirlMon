@@ -23,7 +23,7 @@ namespace WhirlMon
 
 
 
-        static public async void GetWatchedAsync(bool unreadOnly)
+        static public async Task GetWatchedAsync(bool unreadOnly)
         {
             try
             {

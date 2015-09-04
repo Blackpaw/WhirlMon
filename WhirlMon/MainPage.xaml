@@ -12,7 +12,8 @@
         <Pivot>
             <Pivot.RightHeader>
                 <StackPanel Orientation="Horizontal">
-                    <AppBarButton Icon="Refresh" Click="Refresh_Click"/>
+                    <ProgressRing x:Name="progRing"/>
+                    <AppBarButton Icon="Refresh" Click="Refresh_Click" x:Name="bnRefresh"/>
                     <AppBarButton Icon="Setting"/>
                 </StackPanel>
             </Pivot.RightHeader>
