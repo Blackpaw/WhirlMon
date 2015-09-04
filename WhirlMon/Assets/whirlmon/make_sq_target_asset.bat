@@ -1,0 +1,1 @@
+inkscape -y 0 -z -e Square%1x%1Logo.targetsize-%2_altform-unplated.png -w %2 -h %2 hisc-apps-kwhirlmon.svgz
