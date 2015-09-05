@@ -161,6 +161,16 @@ namespace WhirlMon
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
 
+            public int UNREAD { get; set; }
+            public String LAST_DATE_D
+            {
+
+                get
+                {
+                    DateTime d = DateTime.Parse(LAST_DATE);
+                    return PrettyDate.Get(d) + " " + d.ToString("h:mm");
+                }
+            }
         }
 
         public class RootObject
