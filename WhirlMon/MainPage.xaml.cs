@@ -155,6 +155,23 @@ namespace WhirlMonApp
             public NewsDateGroup(IEnumerable<NewsItems> items) : base(items) { }
         }
 
+        public class RecentThreads : ObservableCollection<WhirlMon.WhirlPoolAPIData.RECENT>
+        {
+            public RecentThreads(IEnumerable<WhirlMon.WhirlPoolAPIData.RECENT> items) : base(items)
+            {
+            }
+
+            public int forumId { get; set; }
+            public string Forum { get; set; }
+        }
+
+        public class RecentForumGroups : ObservableCollection<RecentThreads>
+        {
+            public RecentForumGroups(IEnumerable<RecentThreads> items) : base(items) { }
+        }
+
+
+
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
         {
             synchronizationContext.Post(new SendOrPostCallback(o =>
@@ -269,26 +286,28 @@ namespace WhirlMonApp
                     cvsNews.Source = new NewsDateGroup(news);
                 }
 
-            }), root);
-        }
+                // Recent
+                if (r.RECENT != null)
+                {
+                    // new
+                    IEnumerable<RecentThreads> recent =
+                        from item in r.RECENT
+                        group item by item.FORUM_NAME into threadGroup
+                        select new RecentThreads(threadGroup)
+                        {
+                            Forum = threadGroup.Key,
+                            forumId = threadGroup.ElementAtOrDefault(0).FORUM_ID
+                        };
 
-        private async void lvWatched_Tapped(object sender, TappedRoutedEventArgs e)
-        {
-            WhirlMon.WhirlPoolAPIData.WATCHED w = (WhirlMon.WhirlPoolAPIData.WATCHED)lvWatched.SelectedItem;
-
-            string url =
-                   string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", w.ID, w.LASTPAGE, w.LASTREAD);
-            var uri = new Uri(url);
-            var success = await Windows.System.Launcher.LaunchUriAsync(uri);
-            if (success)
-                WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(w.ID, true);
-        }
-
-        private async void lvWatchedForum_Tapped(object sender, TappedRoutedEventArgs e)
-        {            
-            FrameworkElement forum = e.OriginalSource as FrameworkElement;
-            var uri = new Uri(String.Format(@"https://forums.whirlpool.net.au/forum/{0}", forum.Tag));
-            var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+                    var grpRecent = new RecentForumGroups(recent);
+                    var cvsRecent = (CollectionViewSource)Application.Current.Resources["srcRecent"];
+                    if (cvsRecent.Source == null)
+                        cvsRecent.Source = grpRecent;
+                    else
+                    {
+                    }
+                }
+                }), root);
         }
 
         private async void Watched_Tapped(object sender, TappedRoutedEventArgs e)

@@ -67,6 +67,15 @@
 
             <!-- Recent -->
             <PivotItem Header="Recent">
+                <ListView x:Name="lvRecent"  
+                          ItemsSource="{Binding Source={StaticResource srcRecent}}" 
+                          ItemContainerStyle="{StaticResource StretchListViewItem}" 
+                          ItemTemplate="{StaticResource threadItems}"
+                          Tapped="Watched_Tapped">
+                    <ListView.GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
+                    </ListView.GroupStyle>
+                </ListView>
             </PivotItem>
         </Pivot>
 
