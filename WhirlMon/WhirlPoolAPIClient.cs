@@ -15,6 +15,19 @@ namespace WhirlMon
 
         static public string APIKey = "79947-309525-784";
 
+        static private bool _unreadOnly = true;
+        static public bool UnReadOnly
+        {
+            get
+            {
+                return _unreadOnly;
+            }
+            set
+            {
+                _unreadOnly = value;
+            }
+        }
+
 
         static private String APIUrl(String contentType)
         {
@@ -62,7 +75,7 @@ namespace WhirlMon
                 String json = await asyncClient.GetStringAsync(url);
 
                 if (issueRefresh)
-                    GetWatchedAsync(true);
+                    await GetWatchedAsync(true);
 
             }
             catch (Exception)

@@ -7,14 +7,35 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
 
-
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <Pivot>
             <Pivot.RightHeader>
                 <StackPanel Orientation="Horizontal">
                     <ProgressRing x:Name="progRing"/>
                     <AppBarButton Icon="Refresh" Click="Refresh_Click" x:Name="bnRefresh"/>
-                    <AppBarButton Icon="Setting"/>
+                    <AppBarButton Icon="Setting">
+                        <Button.Flyout>
+                            <Flyout>
+                                <StackPanel Padding="10">
+                                    <StackPanel.Resources>
+                                        <Style TargetType="ToggleSwitch">
+                                            <Setter Property="Margin" Value="0,10,0,0"/>
+                                        </Style>
+                                    </StackPanel.Resources>
+                                    <!-- API Key-->
+                                    <TextBlock>API Key</TextBlock>
+                                    <TextBox x:Name="edAPIKey"></TextBox>
+                                    <!-- Unread Only-->
+                                    <ToggleSwitch x:Name="cbUnreadOnly" IsOn="{x:Bind CFG_UnReadOnly, Mode=TwoWay}">Unread Only</ToggleSwitch>
+                                    <!-- Limit to Wireless-->
+                                    <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch>
+                                    <!-- Ignore own posts-->
+                                    <ToggleSwitch x:Name="cbIgnoreOwnPosts">Ignore own Posts</ToggleSwitch>
+                                </StackPanel>
+                            </Flyout>
+                        </Button.Flyout>
+
+                    </AppBarButton>
                 </StackPanel>
             </Pivot.RightHeader>
     

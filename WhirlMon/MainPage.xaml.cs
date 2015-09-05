@@ -8,6 +8,7 @@ using System.Threading;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -40,10 +41,41 @@ namespace WhirlMonApp
             this.InitializeComponent();
             synchronizationContext = SynchronizationContext.Current;
 
+            // Roaming Data
+            InitHandlers();
+
+            // Update timer
             tmRefresh = new Timer(TimerRefresh, this, 1000, 1000 * 60 * 5);
 
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
+
         }
+
+        // Properties
+        bool CFG_UnReadOnly
+        {
+            get { return WhirlMon.WhirlPoolAPIClient.UnReadOnly; }
+            set { WhirlMon.WhirlPoolAPIClient.UnReadOnly = value; }
+        }
+        
+
+        void InitHandlers()
+        {
+            Windows.Storage.ApplicationData.Current.DataChanged +=
+               new TypedEventHandler<ApplicationData, object>(DataChangeHandler);
+
+            Windows.Storage.ApplicationDataContainer roamingSettings =
+                Windows.Storage.ApplicationData.Current.RoamingSettings;
+            Windows.Storage.StorageFolder roamingFolder =
+                Windows.Storage.ApplicationData.Current.RoamingFolder;
+
+        }
+
+        void DataChangeHandler(Windows.Storage.ApplicationData appData, object o)
+        {
+            // TODO: Refresh your data
+        }
+
 
         private void Current_VisibilityChanged(object sender, Windows.UI.Core.VisibilityChangedEventArgs e)
         {
