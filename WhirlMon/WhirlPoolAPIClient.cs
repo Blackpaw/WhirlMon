@@ -34,13 +34,32 @@ namespace WhirlMon
             return String.Format("http://whirlpool.net.au/api/?key={0}&get={1}&output=json", APIKey, contentType);
         }
 
+        static public async Task GetWatchedAsync()
+        {
+            await GetDataAsync(EWhirlPoolData.wpWatched);
+        }
 
+        public enum EWhirlPoolData {wpAll, wpWatched, wpNews, wpRecent}
 
-        static public async Task GetWatchedAsync(bool unreadOnly)
+        static public async Task GetDataAsync(EWhirlPoolData dataReq = EWhirlPoolData.wpAll)
         {
             try
             {
-                String url = APIUrl("watched+news") + "&watchedmode=0";
+                String ds;
+                switch(dataReq)
+                {
+                    case EWhirlPoolData.wpWatched: ds = "watched"; break;
+                    case EWhirlPoolData.wpNews: ds = "news"; break;
+                    case EWhirlPoolData.wpRecent: ds = "recent"; break;
+
+                    default:
+                        ds = "watched+news+recent";
+                        break;
+                }
+
+                String url = APIUrl(ds);
+                if (UnReadOnly && (dataReq == EWhirlPoolData.wpAll || dataReq == EWhirlPoolData.wpWatched))
+                    url += "&watchedmode=0";
 
                 var asyncClient = new HttpClient();
                 asyncClient.DefaultRequestHeaders.Add("User-Agent",
@@ -57,9 +76,11 @@ namespace WhirlMon
 
                
             }
-            catch(Exception)
+            catch(Exception x)
             {
                 // TODO - Log error
+                var dialog = new Windows.UI.Popups.MessageDialog("GetWatched:" + x.Message);
+                var t = dialog.ShowAsync();
             }
         }
 
@@ -75,7 +96,7 @@ namespace WhirlMon
                 String json = await asyncClient.GetStringAsync(url);
 
                 if (issueRefresh)
-                    await GetWatchedAsync(true);
+                    await GetWatchedAsync();
 
             }
             catch (Exception)

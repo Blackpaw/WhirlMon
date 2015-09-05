@@ -4,12 +4,28 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WhirlMonApp"
     RequestedTheme="Dark">
-
+    
     <Application.Resources>
         <ResourceDictionary>
             <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
-            <CollectionViewSource x:Key="srcNews" IsSourceGrouped="True" />
+            <CollectionViewSource x:Key="srcRecent" IsSourceGrouped="True" />
+
+            <Style TargetType="ListViewHeaderItem" x:Key="StretchListViewHeader">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            </Style>
+
+            <Style TargetType="ListViewItem" x:Key="StretchListViewItem">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            </Style>
+
+
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ResourceNews.xaml"/>
+                <ResourceDictionary Source="ThreadsResource.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            
         </ResourceDictionary>
+        
     </Application.Resources>
 
 </Application>

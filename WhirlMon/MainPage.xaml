@@ -41,105 +41,27 @@
     
             <!-- Watched -->
             <PivotItem Header="Watched">
-                <ListView x:Name="lvWatched"  ItemsSource="{Binding Source={StaticResource srcWatched}}">
+                <ListView x:Name="lvWatched"  
+                          ItemsSource="{Binding Source={StaticResource srcWatched}}" 
+                          ItemContainerStyle="{StaticResource StretchListViewItem}" 
+                          ItemTemplate="{StaticResource threadItems}"
+                          Tapped="Watched_Tapped">
                     <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Forum}" FontWeight="Bold" Tapped="lvWatchedForum_Tapped" Tag="{Binding forumId}"/>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
                     </ListView.GroupStyle>
-
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Tapped="lvWatched_Tapped" Padding="2">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid Grid.Row="0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan" TextTrimming="CharacterEllipsis">
-                                    </TextBlock>
-                                    <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
-                                </Grid>
-                                <Grid Grid.Row="1">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding LAST.NAME}" TextTrimming="CharacterEllipsis"/>
-                                    <TextBlock Grid.Column="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
-                                </Grid>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
 
             <!-- News -->
             <PivotItem Header="News">
-                <ListView x:Name="lvNews"  ItemsSource="{Binding Source={StaticResource srcNews}}">
+                <ListView x:Name="lvNews"
+                          ItemsSource="{Binding Source={StaticResource srcNews}}" 
+                          ItemTemplate="{StaticResource newsItems}" 
+                          ItemContainerStyle="{StaticResource StretchListViewItem}" 
+                          Tapped="News_Tapped">
                     <ListView.GroupStyle>
-                        <GroupStyle>
-                            <GroupStyle.HeaderContainerStyle>
-                                <Style TargetType="ListViewHeaderItem">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                </Style>
-                            </GroupStyle.HeaderContainerStyle>
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="{Binding DOW}" FontWeight="Bold"/>
-                                        <TextBlock Grid.Column="1" Text="{Binding SHORTDATE}" FontWeight="Bold" HorizontalAlignment="Right"/>
-                                    </Grid>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                        </GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource newsHeader}" HeaderContainerStyle="{StaticResource StretchListViewHeader}"/>
                     </ListView.GroupStyle>
-
-                    <ListView.ItemContainerStyle>
-                        <Style TargetType="ListViewItem">
-                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        </Style>
-                    </ListView.ItemContainerStyle>
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Tapped="News_Tapped" Padding="2">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="auto"/>
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <!-- <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding TITLE_DECODED}" FontWeight="Bold" Foreground="Cyan"/>
-                                <TextBlock Grid.Column="1" Text="{Binding SOURCE}" HorizontalAlignment="Right"/> -->
-                                <TextBlock  TextTrimming="CharacterEllipsis">
-                                    <Run Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
-                                    <Run Text=" - "/>
-                                    <Run Text="{Binding SOURCE}"/>
-                                </TextBlock>
-                                <TextBlock Grid.Row="1" Text="{Binding BLURB}" TextWrapping="WrapWholeWords"/>
-                                
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
                 </ListView>
             </PivotItem>
 

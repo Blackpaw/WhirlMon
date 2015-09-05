@@ -1,0 +1,37 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:WhirlMon">
+
+    <DataTemplate x:Key="ThreadsHeader">
+        <TextBlock Text="{Binding Forum}" FontWeight="Bold" Tag="{Binding forumId}"/>
+    </DataTemplate>
+
+    <DataTemplate x:Key="threadItems">
+        <Grid Padding="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding TITLE_DECODED}" Foreground="Cyan" TextTrimming="CharacterEllipsis">
+                </TextBlock>
+                <TextBlock Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
+            </Grid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding LAST.NAME}" TextTrimming="CharacterEllipsis"/>
+                <TextBlock Grid.Column="1" Text="{Binding LAST_DATE_D}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
+            </Grid>
+        </Grid>
+    </DataTemplate>
+
+
+</ResourceDictionary>

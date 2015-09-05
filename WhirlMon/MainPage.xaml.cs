@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
+using System.Windows.Input;
 using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -48,14 +49,17 @@ namespace WhirlMonApp
             tmRefresh = new Timer(TimerRefresh, this, 1000, 1000 * 60 * 5);
 
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
-
         }
 
         // Properties
         bool CFG_UnReadOnly
         {
             get { return WhirlMon.WhirlPoolAPIClient.UnReadOnly; }
-            set { WhirlMon.WhirlPoolAPIClient.UnReadOnly = value; }
+            set
+            {
+                WhirlMon.WhirlPoolAPIClient.UnReadOnly = value;
+                System.Threading.Tasks.Task t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
+            }
         }
         
 
@@ -66,14 +70,24 @@ namespace WhirlMonApp
 
             Windows.Storage.ApplicationDataContainer roamingSettings =
                 Windows.Storage.ApplicationData.Current.RoamingSettings;
-            Windows.Storage.StorageFolder roamingFolder =
-                Windows.Storage.ApplicationData.Current.RoamingFolder;
-
         }
 
         void DataChangeHandler(Windows.Storage.ApplicationData appData, object o)
         {
-            // TODO: Refresh your data
+            DoRefresh();
+        }
+
+        void LoadConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            if (roamingSettings.Values.ContainsKey("unreadonly"))
+                WhirlMon.WhirlPoolAPIClient.UnReadOnly = (Boolean) roamingSettings.Values["unreadonly"];
+        }
+
+        void SaveConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["unreadonly"] = WhirlMon.WhirlPoolAPIClient.UnReadOnly;
         }
 
 
@@ -98,7 +112,7 @@ namespace WhirlMonApp
 
             try
             {
-                await WhirlMon.WhirlPoolAPIClient.GetWatchedAsync(true);
+                await WhirlMon.WhirlPoolAPIClient.GetDataAsync();
             }
             finally
             {
@@ -242,15 +256,18 @@ namespace WhirlMonApp
                 }
 
                 // news
-                IEnumerable<NewsItems> news =
-                    from item in r.NEWS
-                    group item by item.DATE_D.Date into newsGroup
-                    select new NewsItems(newsGroup)
-                    {
-                        Date = newsGroup.Key
-                    };
-                var cvsNews = (CollectionViewSource)Application.Current.Resources["srcNews"];
-                cvsNews.Source = new NewsDateGroup(news);
+                if (r.NEWS != null)
+                {
+                    IEnumerable<NewsItems> news =
+                        from item in r.NEWS
+                        group item by item.DATE_D.Date into newsGroup
+                        select new NewsItems(newsGroup)
+                        {
+                            Date = newsGroup.Key
+                        };
+                    var cvsNews = (CollectionViewSource)Application.Current.Resources["srcNews"];
+                    cvsNews.Source = new NewsDateGroup(news);
+                }
 
             }), root);
         }
@@ -274,12 +291,42 @@ namespace WhirlMonApp
             var success = await Windows.System.Launcher.LaunchUriAsync(uri);
         }
 
+        private async void Watched_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
+            if (fe == null)
+                return;
+
+            if (fe.DataContext is WhirlMon.WhirlPoolAPIData.WATCHED)
+            {
+                WhirlMon.WhirlPoolAPIData.WATCHED w = (WhirlMon.WhirlPoolAPIData.WATCHED)fe.DataContext;
+
+                string url =
+                       string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", w.ID, w.LASTPAGE, w.LASTREAD);
+                var uri = new Uri(url);
+                var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+                if (success)
+                    WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(w.ID, true);
+            }
+            else
+            {
+                var uri = new Uri(String.Format(@"https://forums.whirlpool.net.au/forum/{0}", fe.Tag));
+                var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+            }
+
+        }
+
         private async void News_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            WhirlMon.WhirlPoolAPIData.NEWS news = (WhirlMon.WhirlPoolAPIData.NEWS) lvNews.SelectedItem;
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
 
-            var uri = new Uri(String.Format(@"http://whirlpool.net.au/news/go.cfm?article={0}", news.ID));
-            var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+            if (fe != null && (fe.DataContext is WhirlMon.WhirlPoolAPIData.NEWS))
+            {
+                WhirlMon.WhirlPoolAPIData.NEWS news = (WhirlMon.WhirlPoolAPIData.NEWS)lvNews.SelectedItem;
+
+                var uri = new Uri(String.Format(@"http://whirlpool.net.au/news/go.cfm?article={0}", news.ID));
+                var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+            }
 
         }
 

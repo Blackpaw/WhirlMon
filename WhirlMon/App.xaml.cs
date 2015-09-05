@@ -105,5 +105,11 @@ namespace WhirlMonApp
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+
+        // Template Events
+        private void News_Item_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+
+        }
     }
 }
