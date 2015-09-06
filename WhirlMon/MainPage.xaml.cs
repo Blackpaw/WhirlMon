@@ -51,17 +51,41 @@ namespace WhirlMonApp
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
         }
 
-        // Properties
+        // Properties / events
+        private void CFGFlyout_Closed(object sender, object e)
+        {
+            App.SaveConfig();
+        }
+
+        string CFG_APIKey
+        {
+            get { return WhirlMon.WhirlPoolAPIClient.APIKey; }
+            set
+            {
+                WhirlMon.WhirlPoolAPIClient.APIKey = value.Trim();
+                var t = WhirlMon.WhirlPoolAPIClient.GetDataAsync();
+            }
+        }
+
         bool CFG_UnReadOnly
         {
             get { return WhirlMon.WhirlPoolAPIClient.UnReadOnly; }
             set
             {
                 WhirlMon.WhirlPoolAPIClient.UnReadOnly = value;
-                System.Threading.Tasks.Task t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
+                var t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
             }
         }
-        
+
+        bool CFG_IgnoreOwnPosts
+        {
+            get { return WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts; }
+            set
+            {
+                WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts = value;
+                var t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
+            }
+        }
 
         void InitHandlers()
         {
@@ -77,25 +101,16 @@ namespace WhirlMonApp
             DoRefresh();
         }
 
-        void LoadConfig()
-        {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            if (roamingSettings.Values.ContainsKey("unreadonly"))
-                WhirlMon.WhirlPoolAPIClient.UnReadOnly = (Boolean) roamingSettings.Values["unreadonly"];
-        }
-
-        void SaveConfig()
-        {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            roamingSettings.Values["unreadonly"] = WhirlMon.WhirlPoolAPIClient.UnReadOnly;
-        }
-
-
         private void Current_VisibilityChanged(object sender, Windows.UI.Core.VisibilityChangedEventArgs e)
         {
             if (e.Visible)
+            {
                 ClearToast();
+                if (WhirlMon.WhirlPoolAPIClient.APIKey == "")
+                    flyConfig.ShowAt(bnConfig);
+            }
         }
+        
 
         private void TimerRefresh(object o)
         {
@@ -171,6 +186,19 @@ namespace WhirlMonApp
         }
 
 
+        static int GetOurId()
+        {
+            String[] x = WhirlMon.WhirlPoolAPIClient.APIKey.Split('-');
+            if (x.Length > 0)
+            {
+                int id = -1;
+                int.TryParse(x[0], out id);
+                return id;
+            }
+            else
+                return -1;
+
+        }
 
         static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
         {
@@ -186,6 +214,7 @@ namespace WhirlMonApp
                     // new
                     IEnumerable<WatchedThreads> watched =
                         from item in r.WATCHED
+                        where (!WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != GetOurId())
                         group item by item.FORUM_NAME into threadGroup
                         select new WatchedThreads(threadGroup)
                         {
@@ -384,5 +413,6 @@ namespace WhirlMonApp
             lastToast = new ToastNotification(toastXml);
             m_tn.Show(lastToast);
         }
+
     }
 }

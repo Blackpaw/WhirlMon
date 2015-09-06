@@ -7,6 +7,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -34,6 +35,8 @@ namespace WhirlMonApp
                 Microsoft.ApplicationInsights.WindowsCollectors.Session);
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            LoadConfig();
         }
 
         /// <summary>
@@ -102,14 +105,37 @@ namespace WhirlMonApp
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
-            //TODO: Save application state and stop any background activity
+
+            SaveConfig();
             deferral.Complete();
         }
 
-        // Template Events
-        private void News_Item_Tapped(object sender, TappedRoutedEventArgs e)
-        {
 
+        // Config Stuff
+        static public void LoadConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            if (roamingSettings.Values.ContainsKey("apikey"))
+                WhirlMon.WhirlPoolAPIClient.APIKey = ((string)roamingSettings.Values["apikey"]).Trim();
+
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey("unreadonly"))
+                WhirlMon.WhirlPoolAPIClient.UnReadOnly = (Boolean)localSettings.Values["unreadonly"];
+            if (localSettings.Values.ContainsKey("ignoreown"))
+                WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts = (Boolean)localSettings.Values["ignoreown"];
         }
+
+        static public void SaveConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["apikey"] = WhirlMon.WhirlPoolAPIClient.APIKey;
+
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["unreadonly"] = WhirlMon.WhirlPoolAPIClient.UnReadOnly;
+            localSettings.Values["ignoreown"] = WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts;
+        }
+
+
+
     }
 }

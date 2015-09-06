@@ -13,9 +13,9 @@
                 <StackPanel Orientation="Horizontal">
                     <ProgressRing x:Name="progRing"/>
                     <AppBarButton Icon="Refresh" Click="Refresh_Click" x:Name="bnRefresh"/>
-                    <AppBarButton Icon="Setting">
+                    <AppBarButton Icon="Setting" x:Name="bnConfig">
                         <Button.Flyout>
-                            <Flyout>
+                            <Flyout Closed="CFGFlyout_Closed" x:Name="flyConfig">
                                 <StackPanel Padding="10">
                                     <StackPanel.Resources>
                                         <Style TargetType="ToggleSwitch">
@@ -24,13 +24,13 @@
                                     </StackPanel.Resources>
                                     <!-- API Key-->
                                     <TextBlock>API Key</TextBlock>
-                                    <TextBox x:Name="edAPIKey"></TextBox>
+                                    <TextBox x:Name="edAPIKey" Text="{x:Bind CFG_APIKey, Mode=TwoWay}"/>
                                     <!-- Unread Only-->
                                     <ToggleSwitch x:Name="cbUnreadOnly" IsOn="{x:Bind CFG_UnReadOnly, Mode=TwoWay}">Unread Only</ToggleSwitch>
                                     <!-- Limit to Wireless-->
-                                    <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch>
+                                    <!-- <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch> -->
                                     <!-- Ignore own posts-->
-                                    <ToggleSwitch x:Name="cbIgnoreOwnPosts">Ignore own Posts</ToggleSwitch>
+                                    <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
                                 </StackPanel>
                             </Flyout>
                         </Button.Flyout>

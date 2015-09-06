@@ -11,9 +11,7 @@ namespace WhirlMon
 {
     public class WhirlPoolAPIClient
     {
-        //static public String APIKey { get; set; }
-
-        static public string APIKey = "79947-309525-784";
+        static public String APIKey { get; set; }
 
         static private bool _unreadOnly = true;
         static public bool UnReadOnly
@@ -25,6 +23,20 @@ namespace WhirlMon
             set
             {
                 _unreadOnly = value;
+            }
+        }
+
+
+        static private bool _ignoreOwnPosts = true;
+        static public bool IgnoreOwnPosts
+        {
+            get
+            {
+                return _ignoreOwnPosts;
+            }
+            set
+            {
+                _ignoreOwnPosts = value;
             }
         }
 
@@ -43,6 +55,8 @@ namespace WhirlMon
 
         static public async Task GetDataAsync(EWhirlPoolData dataReq = EWhirlPoolData.wpAll)
         {
+            if (APIKey == "")
+                return;
             try
             {
                 String ds;
@@ -86,6 +100,8 @@ namespace WhirlMon
 
         static public async void MarkThreadReadAsync(int id, bool issueRefresh)
         {
+            if (APIKey == "")
+                return;
             try
             {
                 string url = String.Format("http://whirlpool.net.au/api/?key={0}&watchedread={1}", APIKey, id);
