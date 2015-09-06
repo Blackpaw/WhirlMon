@@ -105,7 +105,7 @@ namespace WhirlMonApp
         {
             if (e.Visible)
             {
-                ClearToast();
+                WhirlMon.WhirlPoolAPIClient.ClearToast();
                 if (WhirlMon.WhirlPoolAPIClient.APIKey == "")
                     flyConfig.ShowAt(bnConfig);
             }
@@ -206,8 +206,6 @@ namespace WhirlMonApp
             {
                 var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
 
-                int newMsgs = 0;
-
                 // Watched
                 if (r.WATCHED != null)
                 {
@@ -258,7 +256,6 @@ namespace WhirlMonApp
                                 // Update?
                                 if (!wItem.Equals(_w))
                                 {
-                                    newMsgs += (_w.UNREAD - wItem.UNREAD);
                                     wItem.LAST = _w.LAST;
                                     wItem.LAST_DATE = _w.LAST_DATE;
                                     wItem.UNREAD = _w.UNREAD;
@@ -275,7 +272,6 @@ namespace WhirlMonApp
                                 {
                                     // Add thread
                                     grp.Add(wItem);
-                                    newMsgs += wItem.UNREAD;
                                 }
                             }
                         }
@@ -289,16 +285,9 @@ namespace WhirlMonApp
                             {
                                 // Add
                                 current.Add(grp);
-                                foreach(var wItem in grp)
-                                    newMsgs += wItem.UNREAD;
                             }
                         }
                     }
-                }
-                if (newMsgs > 0)
-                {
-                    string toastText = string.Format("{0} new messages", newMsgs);
-                    ShowToast(toastText);
                 }
 
                 // news
@@ -386,33 +375,5 @@ namespace WhirlMonApp
         {
             DoRefresh();
         }
-
-        static ToastNotifier m_tn = null;
-        static ToastNotification lastToast = null;
-
-        static public void ClearToast()
-        {
-            if (lastToast != null)
-            {
-                m_tn.Hide(lastToast);
-                lastToast = null;
-            }
-        }
-
-        static void ShowToast(string toastText)
-        {
-            if (m_tn == null)
-                m_tn = ToastNotificationManager.CreateToastNotifier();
-
-            ClearToast();
-
-            ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
-            XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
-            XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-            toastTextElements[0].AppendChild(toastXml.CreateTextNode(toastText));
-            lastToast = new ToastNotification(toastXml);
-            m_tn.Show(lastToast);
-        }
-
     }
 }
