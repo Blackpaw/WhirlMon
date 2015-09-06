@@ -301,11 +301,7 @@ namespace WhirlMonApp
 
                     var grpRecent = new RecentForumGroups(recent);
                     var cvsRecent = (CollectionViewSource)Application.Current.Resources["srcRecent"];
-                    if (cvsRecent.Source == null)
-                        cvsRecent.Source = grpRecent;
-                    else
-                    {
-                    }
+                    cvsRecent.Source = grpRecent;
                 }
                 }), root);
         }
@@ -318,21 +314,29 @@ namespace WhirlMonApp
 
             if (fe.DataContext is WhirlMon.WhirlPoolAPIData.WATCHED)
             {
-                WhirlMon.WhirlPoolAPIData.WATCHED w = (WhirlMon.WhirlPoolAPIData.WATCHED)fe.DataContext;
+                WhirlMon.WhirlPoolAPIData.WATCHED watched = (WhirlMon.WhirlPoolAPIData.WATCHED)fe.DataContext;
 
-                string url =
-                       string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", w.ID, w.LASTPAGE, w.LASTREAD);
+                String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", watched.ID, watched.LASTPAGE, watched.LASTREAD);
                 var uri = new Uri(url);
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);
                 if (success)
-                    WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(w.ID, true);
+                    WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
+            }
+            else if (fe.DataContext is WhirlMon.WhirlPoolAPIData.RECENT)
+            {
+                WhirlMon.WhirlPoolAPIData.RECENT recent = fe.DataContext as WhirlMon.WhirlPoolAPIData.RECENT;
+
+                String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p=-1&#bottom", recent.ID);
+                var uri = new Uri(url);
+                var success = await Windows.System.Launcher.LaunchUriAsync(uri);
             }
             else
             {
-                var uri = new Uri(String.Format(@"https://forums.whirlpool.net.au/forum/{0}", fe.Tag));
+                // Forum Header Click
+                String url = String.Format(@"https://forums.whirlpool.net.au/forum/{0}", fe.Tag);
+                var uri = new Uri(url);
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);
             }
-
         }
 
         private async void News_Tapped(object sender, TappedRoutedEventArgs e)

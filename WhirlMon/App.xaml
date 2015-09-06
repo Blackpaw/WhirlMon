@@ -22,7 +22,7 @@
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ResourceNews.xaml"/>
-                <ResourceDictionary Source="ThreadsResource.xaml"/>
+                <ResourceDictionary Source="ResourceThreads.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
         </ResourceDictionary>
