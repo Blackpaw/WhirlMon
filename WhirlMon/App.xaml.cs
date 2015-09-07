@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
+using WhirlMonData;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 
 
@@ -36,25 +26,19 @@ namespace WhirlMonApp
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
-            WhirlMonData.WhirlPoolAPIClient.LoadConfig();
-            WhirlMonWatchedTask.BackgroundTasks.Register();
+            try
+            {
+                WhirlMonData.WhirlPoolAPIClient.LoadConfig();
+                WhirlMonWatchedTask.BackgroundTasks.Register();
+            }
+            catch (Exception x)
+            {
+                WhirlPoolAPIClient.ShowErrorToast("App", x);
+            }
         }
 
-        /// <summary>
-        /// Invoked when the application is launched normally by the end user.  Other entry points
-        /// will be used such as when the application is launched to open a specific file.
-        /// </summary>
-        /// <param name="e">Details about the launch request and process.</param>
-        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        private void InitRoot(LaunchActivatedEventArgs e, string Arguments)
         {
-
-#if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
-            {
-                this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
-
             Frame rootFrame = Window.Current.Content as Frame;
 
             // Do not repeat app initialization when the Window already has content,
@@ -66,7 +50,7 @@ namespace WhirlMonApp
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
+                if (e != null && e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
                 }
@@ -80,10 +64,28 @@ namespace WhirlMonApp
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                rootFrame.Navigate(typeof(MainPage), Arguments);
             }
             // Ensure the current window is active
             Window.Current.Activate();
+
+        }
+
+        /// <summary>
+        /// Invoked when the application is launched normally by the end user.  Other entry points
+        /// will be used such as when the application is launched to open a specific file.
+        /// </summary>
+        /// <param name="e">Details about the launch request and process.</param>
+        protected override void OnLaunched(LaunchActivatedEventArgs e)
+        {
+
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                //this.DebugSettings.EnableFrameRateCounter = true;
+            }
+#endif
+            InitRoot(e, e.Arguments);
         }
 
         /// <summary>
@@ -93,7 +95,7 @@ namespace WhirlMonApp
         /// <param name="e">Details about the navigation failure</param>
         void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
-            throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
+            WhirlPoolAPIClient.ShowToast("App.OnNavigationFailed: Failed to load Page " + e.SourcePageType.FullName);
         }
 
         /// <summary>
@@ -107,10 +109,58 @@ namespace WhirlMonApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            WhirlMonData.WhirlPoolAPIClient.SaveConfig();
+            try
+            {
+                WhirlMonData.WhirlPoolAPIClient.SaveConfig();
+            }
+            catch (Exception x)
+            {
+                WhirlPoolAPIClient.ShowErrorToast("App.OnSuspending", x);
+            }
+
             deferral.Complete();
         }
 
 
+        protected async override void OnActivated(IActivatedEventArgs args)
+        {
+            try
+            {
+                InitRoot(null, "");
+
+                //Initialize your app if not initialized;
+                //Find out if this is activated from a toast;
+                if (args.Kind == ActivationKind.ToastNotification)
+                {
+                    var toastArgs = args as ToastNotificationActivatedEventArgs;
+                    var argument = toastArgs.Argument;
+
+                    string[] arguments = argument.Split(',');
+                    string sid = arguments.Length > 0 ? arguments[0] : "";
+                    string lastpage = arguments.Length > 1 ? arguments[1] : "";
+                    string lastread = arguments.Length > 2 ? arguments[2] : "";
+                    int id = 0;
+                    int.TryParse(sid, out id);
+
+                    if (lastpage != "")
+                    {
+                        String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", sid, lastpage, lastread);
+                        var uri = new Uri(url);
+                        var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+                        if (success)
+                            await WhirlMonData.WhirlPoolAPIClient.MarkThreadReadAsync(id, false);
+                    }
+                    else
+                    {
+                        await WhirlMonData.WhirlPoolAPIClient.MarkThreadReadAsync(id, false);
+                        await WhirlPoolAPIClient.GetWatchedAsync();
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                WhirlPoolAPIClient.ShowErrorToast("App.OnActivated", x);
+            }
+        }
     }
 }

@@ -341,7 +341,7 @@ namespace WhirlMonApp
                 var uri = new Uri(url);
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);
                 if (success)
-                    WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
+                    await WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
             }
             else if (fe.DataContext is WhirlPoolAPIData.RECENT)
             {
