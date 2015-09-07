@@ -117,6 +117,12 @@
     <Compile Include="MainBackground.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WhirlMonData\WhirlMonData.csproj">
+      <Project>{63015b51-0256-476f-bdc7-2143071a3f6b}</Project>
+      <Name>WhirlMonData</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

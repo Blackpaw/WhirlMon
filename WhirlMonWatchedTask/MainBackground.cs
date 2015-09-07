@@ -6,44 +6,22 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Data.Xml.Dom;
 using Windows.UI.Notifications;
+using WhirlMonData;
 
 namespace WhirlMonWatchedTask
 {
     public sealed class MainBackground : IBackgroundTask
     {
-        //BackgroundTaskDeferral _deferral = null;
+        BackgroundTaskDeferral _deferral = null;
 
-        static public void ClearToast()
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            ToastNotificationManager.History.Remove("1", "general");
-        }
-
-        static public void ShowToast(string toastText)
-        {
-            ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
-
-            ClearToast();
-
-            ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
-            XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
-            XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-            toastTextElements[0].AppendChild(toastXml.CreateTextNode(toastText));
-            ToastNotification toast = new ToastNotification(toastXml);
-            toast.Tag = "1";
-            toast.Group = "general";
-            tn.Show(toast);
-        }
-
-        public void Run(IBackgroundTaskInstance taskInstance)
-        {
-            ShowToast("Background Task!");
-            /*
+            WhirlPoolAPIClient.LoadConfig();
             _deferral = taskInstance.GetDeferral();
 
-            await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll, false);
+            await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll);
 
             _deferral.Complete();
-            */
         }
 
         static private bool taskRegistered = false;
@@ -83,7 +61,7 @@ namespace WhirlMonWatchedTask
             }
             catch(Exception x)
             {
-                ShowToast("Register Background Task:" + x.Message);
+               WhirlPoolAPIClient.ShowToast("Register Background Task:" + x.Message);
             }
 
             return;
