@@ -104,8 +104,6 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WhirlPoolAPIClient.cs" />
-    <Compile Include="WhirlPoolAPIData.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -186,6 +184,10 @@
     </SDKReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WhirlMonData\WhirlMonData.csproj">
+      <Project>{63015b51-0256-476f-bdc7-2143071a3f6b}</Project>
+      <Name>WhirlMonData</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WhirlMonWatchedTask\WhirlMonWatchedTask.csproj">
       <Project>{e65778fa-123c-4923-8c75-f77e2c962e2c}</Project>
       <Name>WhirlMonWatchedTask</Name>

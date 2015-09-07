@@ -19,6 +19,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using WhirlMonData;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -30,9 +31,6 @@ namespace WhirlMonApp
     /// 
     public sealed partial class MainPage : Page
     {
-        public class WatchedList : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>{}
-
-
         static private SynchronizationContext synchronizationContext;
 
         static Timer tmRefresh = null;
@@ -41,6 +39,9 @@ namespace WhirlMonApp
         {
             this.InitializeComponent();
             synchronizationContext = SynchronizationContext.Current;
+
+            // Uodate UI Handler
+            WhirlMonData.WhirlPoolAPIClient.UpdateUI = UpdateUIData;
 
             // Roaming Data
             InitHandlers();
@@ -54,36 +55,36 @@ namespace WhirlMonApp
         // Properties / events
         private void CFGFlyout_Closed(object sender, object e)
         {
-            App.SaveConfig();
+            WhirlMonData.WhirlPoolAPIClient.SaveConfig();
         }
 
         string CFG_APIKey
         {
-            get { return WhirlMon.WhirlPoolAPIClient.APIKey; }
+            get { return WhirlMonData.WhirlPoolAPIClient.APIKey; }
             set
             {
-                WhirlMon.WhirlPoolAPIClient.APIKey = value.Trim();
-                var t = WhirlMon.WhirlPoolAPIClient.GetDataAsync();
+                WhirlPoolAPIClient.APIKey = value.Trim();
+                var t = WhirlPoolAPIClient.GetDataAsync();
             }
         }
 
         bool CFG_UnReadOnly
         {
-            get { return WhirlMon.WhirlPoolAPIClient.UnReadOnly; }
+            get { return WhirlPoolAPIClient.UnReadOnly; }
             set
             {
-                WhirlMon.WhirlPoolAPIClient.UnReadOnly = value;
-                var t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
+                WhirlPoolAPIClient.UnReadOnly = value;
+                var t = WhirlPoolAPIClient.GetWatchedAsync();
             }
         }
 
         bool CFG_IgnoreOwnPosts
         {
-            get { return WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts; }
+            get { return WhirlPoolAPIClient.IgnoreOwnPosts; }
             set
             {
-                WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts = value;
-                var t = WhirlMon.WhirlPoolAPIClient.GetWatchedAsync();
+                WhirlPoolAPIClient.IgnoreOwnPosts = value;
+                var t = WhirlPoolAPIClient.GetWatchedAsync();
             }
         }
 
@@ -105,8 +106,8 @@ namespace WhirlMonApp
         {
             if (e.Visible)
             {
-                WhirlMon.WhirlPoolAPIClient.ClearToast();
-                if (WhirlMon.WhirlPoolAPIClient.APIKey == "")
+                WhirlPoolAPIClient.ClearToast();
+                if (WhirlPoolAPIClient.APIKey == "")
                     flyConfig.ShowAt(bnConfig);
             }
         }
@@ -127,7 +128,7 @@ namespace WhirlMonApp
 
             try
             {
-                await WhirlMon.WhirlPoolAPIClient.GetDataAsync();
+                await WhirlPoolAPIClient.GetDataAsync();
             }
             finally
             {
@@ -139,9 +140,9 @@ namespace WhirlMonApp
             }
         }
 
-        public class WatchedThreads : ObservableCollection<WhirlMon.WhirlPoolAPIData.WATCHED>
+        public class WatchedThreads : ObservableCollection<WhirlMonData.WhirlPoolAPIData.WATCHED>
         {
-            public WatchedThreads(IEnumerable<WhirlMon.WhirlPoolAPIData.WATCHED> items) : base(items)
+            public WatchedThreads(IEnumerable<WhirlMonData.WhirlPoolAPIData.WATCHED> items) : base(items)
             {
             }
 
@@ -154,15 +155,15 @@ namespace WhirlMonApp
             public ThreadForumGroups(IEnumerable<WatchedThreads> items) : base(items) { }
         }
 
-        public class NewsItems : ObservableCollection<WhirlMon.WhirlPoolAPIData.NEWS>
+        public class NewsItems : ObservableCollection<WhirlMonData.WhirlPoolAPIData.NEWS>
         {
-            public NewsItems(IEnumerable<WhirlMon.WhirlPoolAPIData.NEWS> items) : base(items)
+            public NewsItems(IEnumerable<WhirlMonData.WhirlPoolAPIData.NEWS> items) : base(items)
             {
             }
 
             public DateTime Date { get; set; }
             public string DOW { get { return Date.DayOfWeek.ToString(); } }
-            public string SHORTDATE { get { return WhirlMon.PrettyDate.ToShortDate(Date); } }
+            public string SHORTDATE { get { return WhirlMonData.PrettyDate.ToShortDate(Date); } }
         }
 
         public class NewsDateGroup : ObservableCollection<NewsItems>
@@ -170,9 +171,9 @@ namespace WhirlMonApp
             public NewsDateGroup(IEnumerable<NewsItems> items) : base(items) { }
         }
 
-        public class RecentThreads : ObservableCollection<WhirlMon.WhirlPoolAPIData.RECENT>
+        public class RecentThreads : ObservableCollection<WhirlPoolAPIData.RECENT>
         {
-            public RecentThreads(IEnumerable<WhirlMon.WhirlPoolAPIData.RECENT> items) : base(items)
+            public RecentThreads(IEnumerable<WhirlPoolAPIData.RECENT> items) : base(items)
             {
             }
 
@@ -188,7 +189,7 @@ namespace WhirlMonApp
 
         static int GetOurId()
         {
-            String[] x = WhirlMon.WhirlPoolAPIClient.APIKey.Split('-');
+            String[] x = WhirlMonData.WhirlPoolAPIClient.APIKey.Split('-');
             if (x.Length > 0)
             {
                 int id = -1;
@@ -200,11 +201,11 @@ namespace WhirlMonApp
 
         }
 
-        static public void UpdateUIData(WhirlMon.WhirlPoolAPIData.RootObject root)
+        static public bool UpdateUIData(WhirlPoolAPIData.RootObject root)
         {
             synchronizationContext.Post(new SendOrPostCallback(o =>
             {
-                var r = (WhirlMon.WhirlPoolAPIData.RootObject) o;
+                var r = (WhirlPoolAPIData.RootObject) o;
 
                 // Watched
                 if (r.WATCHED != null)
@@ -212,7 +213,7 @@ namespace WhirlMonApp
                     // new
                     IEnumerable<WatchedThreads> watched =
                         from item in r.WATCHED
-                        where (!WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != GetOurId())
+                        where (!WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != GetOurId())
                         group item by item.FORUM_NAME into threadGroup
                         select new WatchedThreads(threadGroup)
                         {
@@ -244,7 +245,7 @@ namespace WhirlMonApp
                             // Check exisiting threads in group
                             for (var tIdx = grp.Count - 1; tIdx >= 0; tIdx--)
                             {
-                                WhirlMon.WhirlPoolAPIData.WATCHED wItem = grp[tIdx];
+                                WhirlPoolAPIData.WATCHED wItem = grp[tIdx];
                                 var _w = _grp.SingleOrDefault(w => w.ID == wItem.ID);
                                 if (_w == null)
                                 {
@@ -266,7 +267,7 @@ namespace WhirlMonApp
                             // Check for new Threads
                             for (var tIdx = _grp.Count - 1; tIdx >= 0; tIdx--)
                             {
-                                WhirlMon.WhirlPoolAPIData.WATCHED wItem = _grp[tIdx];
+                                WhirlPoolAPIData.WATCHED wItem = _grp[tIdx];
                                 var _w = grp.SingleOrDefault(w => w.ID == wItem.ID);
                                 if (_w == null)
                                 {
@@ -322,6 +323,8 @@ namespace WhirlMonApp
                     cvsRecent.Source = grpRecent;
                 }
                 }), root);
+
+            return true;
         }
 
         private async void Watched_Tapped(object sender, TappedRoutedEventArgs e)
@@ -330,19 +333,19 @@ namespace WhirlMonApp
             if (fe == null)
                 return;
 
-            if (fe.DataContext is WhirlMon.WhirlPoolAPIData.WATCHED)
+            if (fe.DataContext is WhirlPoolAPIData.WATCHED)
             {
-                WhirlMon.WhirlPoolAPIData.WATCHED watched = (WhirlMon.WhirlPoolAPIData.WATCHED)fe.DataContext;
+                WhirlPoolAPIData.WATCHED watched = (WhirlPoolAPIData.WATCHED)fe.DataContext;
 
                 String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", watched.ID, watched.LASTPAGE, watched.LASTREAD);
                 var uri = new Uri(url);
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);
                 if (success)
-                    WhirlMon.WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
+                    WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
             }
-            else if (fe.DataContext is WhirlMon.WhirlPoolAPIData.RECENT)
+            else if (fe.DataContext is WhirlPoolAPIData.RECENT)
             {
-                WhirlMon.WhirlPoolAPIData.RECENT recent = fe.DataContext as WhirlMon.WhirlPoolAPIData.RECENT;
+                WhirlPoolAPIData.RECENT recent = fe.DataContext as WhirlPoolAPIData.RECENT;
 
                 String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p=-1&#bottom", recent.ID);
                 var uri = new Uri(url);
@@ -361,9 +364,9 @@ namespace WhirlMonApp
         {
             FrameworkElement fe = e.OriginalSource as FrameworkElement;
 
-            if (fe != null && (fe.DataContext is WhirlMon.WhirlPoolAPIData.NEWS))
+            if (fe != null && (fe.DataContext is WhirlPoolAPIData.NEWS))
             {
-                WhirlMon.WhirlPoolAPIData.NEWS news = (WhirlMon.WhirlPoolAPIData.NEWS)lvNews.SelectedItem;
+                WhirlPoolAPIData.NEWS news = (WhirlPoolAPIData.NEWS)lvNews.SelectedItem;
 
                 var uri = new Uri(String.Format(@"http://whirlpool.net.au/news/go.cfm?article={0}", news.ID));
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);

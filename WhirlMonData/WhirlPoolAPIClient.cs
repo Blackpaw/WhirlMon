@@ -7,9 +7,10 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
+using Windows.Storage;
 using Windows.UI.Notifications;
 
-namespace WhirlMon
+namespace WhirlMonData
 {
     public class WhirlPoolAPIClient
     {
@@ -43,6 +44,34 @@ namespace WhirlMon
         }
 
 
+        // Config Stuff
+        static public void LoadConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            if (roamingSettings.Values.ContainsKey("apikey"))
+                APIKey = ((string)roamingSettings.Values["apikey"]).Trim();
+
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey("unreadonly"))
+                UnReadOnly = (Boolean)localSettings.Values["unreadonly"];
+            if (localSettings.Values.ContainsKey("ignoreown"))
+                IgnoreOwnPosts = (Boolean)localSettings.Values["ignoreown"];
+        }
+
+        static public void SaveConfig()
+        {
+            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
+            roamingSettings.Values["apikey"] = APIKey;
+
+            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+            localSettings.Values["unreadonly"] = UnReadOnly;
+            localSettings.Values["ignoreown"] = IgnoreOwnPosts;
+        }
+
+
+
+
+
         static private String APIUrl(String contentType)
         {
             return String.Format("http://whirlpool.net.au/api/?key={0}&get={1}&output=json", APIKey, contentType);
@@ -58,6 +87,8 @@ namespace WhirlMon
         // Track state of unread threads
         private class ThreadReadState : Dictionary<int, int> {}
         static ThreadReadState currentThreadState = new ThreadReadState();
+
+        static public Func<WhirlPoolAPIData.RootObject, bool> UpdateUI { get; set; }
 
         static public async Task GetDataAsync(EWhirlPoolData dataReq = EWhirlPoolData.wpAll)
         {
@@ -130,7 +161,9 @@ namespace WhirlMon
                     }
 
 
-                    WhirlMonApp.MainPage.UpdateUIData(data);
+                    // TODO: WhirlMonApp.MainPage.UpdateUIData(data);
+                    if (UpdateUI != null)
+                        UpdateUI(data);
                 }
 
                

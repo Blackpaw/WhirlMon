@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Windows.Globalization;
 using Windows.Globalization.DateTimeFormatting;
 
-namespace WhirlMon
+namespace WhirlMonData
 {
     public class PrettyDate
     {

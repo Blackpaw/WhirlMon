@@ -36,7 +36,7 @@ namespace WhirlMonApp
             this.InitializeComponent();
             this.Suspending += OnSuspending;
 
-            LoadConfig();
+            WhirlMonData.WhirlPoolAPIClient.LoadConfig();
             WhirlMonWatchedTask.MainBackground.Register();
         }
 
@@ -107,35 +107,9 @@ namespace WhirlMonApp
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            SaveConfig();
+            WhirlMonData.WhirlPoolAPIClient.SaveConfig();
             deferral.Complete();
         }
-
-
-        // Config Stuff
-        static public void LoadConfig()
-        {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            if (roamingSettings.Values.ContainsKey("apikey"))
-                WhirlMon.WhirlPoolAPIClient.APIKey = ((string)roamingSettings.Values["apikey"]).Trim();
-
-            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            if (localSettings.Values.ContainsKey("unreadonly"))
-                WhirlMon.WhirlPoolAPIClient.UnReadOnly = (Boolean)localSettings.Values["unreadonly"];
-            if (localSettings.Values.ContainsKey("ignoreown"))
-                WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts = (Boolean)localSettings.Values["ignoreown"];
-        }
-
-        static public void SaveConfig()
-        {
-            ApplicationDataContainer roamingSettings = ApplicationData.Current.RoamingSettings;
-            roamingSettings.Values["apikey"] = WhirlMon.WhirlPoolAPIClient.APIKey;
-
-            ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
-            localSettings.Values["unreadonly"] = WhirlMon.WhirlPoolAPIClient.UnReadOnly;
-            localSettings.Values["ignoreown"] = WhirlMon.WhirlPoolAPIClient.IgnoreOwnPosts;
-        }
-
 
 
     }

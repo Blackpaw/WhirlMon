@@ -15,7 +15,7 @@ namespace WhirlMon
         {
             _deferral = taskInstance.GetDeferral();
 
-            await WhirlPoolAPIClient.GetDataAsync();
+            await WhirlMonData.WhirlPoolAPIClient.GetDataAsync();
 
             _deferral.Complete();
         }
