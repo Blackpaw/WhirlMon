@@ -185,6 +185,12 @@
       <Name>Microsoft .NET Core Runtime Package for Windows</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WhirlMonWatchedTask\WhirlMonWatchedTask.csproj">
+      <Project>{e65778fa-123c-4923-8c75-f77e2c962e2c}</Project>
+      <Name>WhirlMonWatchedTask</Name>
+    </ProjectReference>
+  </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

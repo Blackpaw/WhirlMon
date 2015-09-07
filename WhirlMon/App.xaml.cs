@@ -37,6 +37,7 @@ namespace WhirlMonApp
             this.Suspending += OnSuspending;
 
             LoadConfig();
+            WhirlMonWatchedTask.MainBackground.Register();
         }
 
         /// <summary>

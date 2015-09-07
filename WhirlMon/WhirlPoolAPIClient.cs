@@ -166,25 +166,14 @@ namespace WhirlMon
             }
         }
 
-        /// <summary>
-        /// Toast stuff
-        /// </summary>
-        static ToastNotifier m_tn = null;
-        static ToastNotification lastToast = null;
-
         static public void ClearToast()
         {
-            if (lastToast != null)
-            {
-                m_tn.Hide(lastToast);
-                lastToast = null;
-            }
+            ToastNotificationManager.History.Remove("1", "general");
         }
 
-        static void ShowToast(string toastText)
+        static public void ShowToast(string toastText)
         {
-            if (m_tn == null)
-                m_tn = ToastNotificationManager.CreateToastNotifier();
+            ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
 
             ClearToast();
 
@@ -192,9 +181,12 @@ namespace WhirlMon
             XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
             XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
             toastTextElements[0].AppendChild(toastXml.CreateTextNode(toastText));
-            lastToast = new ToastNotification(toastXml);
-            m_tn.Show(lastToast);
+            ToastNotification toast = new ToastNotification(toastXml);
+            toast.Tag = "1";
+            toast.Group = "general";
+            tn.Show(toast);
         }
+
 
     }
 }
