@@ -54,6 +54,9 @@ namespace WhirlMonWatchedTask
                 TimeTrigger minTrigger = new TimeTrigger(15, false);
                 builder.SetTrigger(minTrigger);
 
+                // DEBUG
+                builder.SetTrigger(new SystemTrigger(SystemTriggerType.TimeZoneChange, false));
+
                 await Windows.ApplicationModel.Background.BackgroundExecutionManager.RequestAccessAsync();
 
 

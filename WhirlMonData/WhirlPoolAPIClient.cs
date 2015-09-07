@@ -82,10 +82,10 @@ namespace WhirlMonData
             await GetDataAsync(EWhirlPoolData.wpWatched);
         }
 
-        public enum EWhirlPoolData {wpAll, wpWatched, wpNews, wpRecent}
+        public enum EWhirlPoolData { wpAll, wpWatched, wpNews, wpRecent }
 
         // Track state of unread threads
-        private class ThreadReadState : Dictionary<int, int> {}
+        private class ThreadReadState : Dictionary<int, int> { }
         static ThreadReadState currentThreadState = new ThreadReadState();
 
         static public Func<WhirlPoolAPIData.RootObject, bool> UpdateUI { get; set; }
@@ -97,7 +97,7 @@ namespace WhirlMonData
             try
             {
                 String ds;
-                switch(dataReq)
+                switch (dataReq)
                 {
                     case EWhirlPoolData.wpWatched: ds = "watched"; break;
                     case EWhirlPoolData.wpNews: ds = "news"; break;
@@ -123,56 +123,17 @@ namespace WhirlMonData
                 {
                     var data = (WhirlPoolAPIData.RootObject)serializer.ReadObject(ms);
 
-                    int new_unread = 0;
-                    /// Calcuate new msgs against last run
-                    foreach(var watched in data.WATCHED)
-                    {
-                        int unread = 0;
-                        if (currentThreadState.TryGetValue(watched.FORUM_ID, out unread))
-                        {
-                            // alread retrieved it
-                            if (watched.UNREAD > unread)
-                                new_unread += (watched.UNREAD - unread);
-                        }
-                        else
-                        {
-                            // new
-                            new_unread += watched.UNREAD;
-                        }
-                        currentThreadState[watched.FORUM_ID] = watched.UNREAD;
-                    }
-
-                    // remove threads read since last run
-                    List<int> fids = new List<int>();
-                    foreach (var fid in currentThreadState.Keys)
-                    {
-                        bool exists = data.WATCHED.Exists(x => x.FORUM_ID == fid);
-                        if (!exists)
-                            fids.Add(fid);
-                    }
-                    foreach (var fid in fids)
-                        currentThreadState.Remove(fid);
-
-                    // Generate toast notification if needed
-                    // Only for background thread now
-                    if (new_unread > 0 && UpdateUI == null)
-                    {
-                        string toastText = string.Format("{0} new messages", new_unread);
-                        ShowToast(toastText);
-                    }
-
+                    UpdateWatchedToasts(data.WATCHED);
 
                     if (UpdateUI != null)
                         UpdateUI(data);
                 }
 
-               
+
             }
-            catch(Exception x)
+            catch (Exception x)
             {
-                // TODO - Log error
-                var dialog = new Windows.UI.Popups.MessageDialog("GetWatched:" + x.Message);
-                var t = dialog.ShowAsync();
+                ShowToast("GetWatched:" + x.Message);
             }
         }
 
@@ -208,8 +169,6 @@ namespace WhirlMonData
         {
             ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
 
-            ClearToast();
-
             ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
             XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
             XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
@@ -220,6 +179,145 @@ namespace WhirlMonData
             tn.Show(toast);
         }
 
+        // Watched Detail
+        static public void ShowWatchedToast(WhirlPoolAPIData.WATCHED w)
+        {
+            String text = String.Format("{0}, {1} - {2}", w.TITLE_DECODED, w.UNREAD, w.LAST.NAME);
+            ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
 
+            ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
+            XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
+            XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
+            toastTextElements[0].AppendChild(toastXml.CreateTextNode(text));
+            ToastNotification toast = new ToastNotification(toastXml);
+            toast.Tag = w.ID.ToString();
+            tn.Show(toast);
+        }
+
+        static public void ClearWatchedToast(WhirlPoolAPIData.WATCHED w)
+        {
+            ToastNotificationManager.History.Remove(w.ID.ToString());
+        }
+
+        static public void ClearWatchedToast(int watchedId)
+        {
+            ToastNotificationManager.History.Remove(watchedId.ToString());
+        }
+
+        static public void ClearWatchedToast(ToastNotification tn)
+        {
+            ToastNotificationManager.History.Remove(tn.Tag, tn.Group);
+        }
+
+        public class ToastItem
+        {
+            public int id;
+            public string last;
+
+            public ToastItem(int _id, string _last)
+            {
+                id = _id;
+                last = _last;
+            }
+        }
+
+        class ToastedDictionary : Dictionary<int, string> { }
+
+        static private async Task<ToastedDictionary> ReadToasted()
+        {
+            try
+            {
+                Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
+                String json = await FileIO.ReadTextAsync(toastedFile);
+
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    using (StreamWriter wr = new StreamWriter(ms))
+                    {
+                        wr.Write(json);
+                        wr.Flush();
+                        ms.Position = 0;
+                        var serializer = new DataContractJsonSerializer(typeof(ToastedDictionary));
+                        ToastedDictionary td = (ToastedDictionary)serializer.ReadObject(ms);
+                        return td;
+                    }
+                }
+            }
+            catch (Exception x)
+            {
+                ShowToast("ReadToasted:" + x.Message);
+                return new ToastedDictionary();
+            }
+
+        }
+
+        static private async void WriteToasted(ToastedDictionary toasted)
+        {
+            try
+            {
+                // Convert to json
+                MemoryStream ms = new MemoryStream();
+                var serializer = new DataContractJsonSerializer(typeof(ToastedDictionary));
+                serializer.WriteObject(ms, toasted);
+                ms.Flush();
+                ms.Position = 0;
+                var sr = new StreamReader(ms);
+                String json = sr.ReadToEnd();
+
+                // Write To File
+                Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
+
+                await FileIO.WriteTextAsync(toastedFile, json);
+            }
+            catch (Exception x)
+            {
+                ShowToast("WriteToasted:" + x.Message);
+            }
+        }
+
+        static public async void UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
+        {
+            ToastedDictionary toasted = await ReadToasted();
+
+            // Remove obsoleted toasts - iterate over toasted
+            List<int> keysToRemove = new List<int>();
+            foreach (var id in toasted.Keys)
+            {
+                // Find
+                var w = watched.Find(x => x.ID == id);
+                if (w == null)
+                {
+                    ClearWatchedToast(id);
+                    keysToRemove.Add(id);
+                }
+            }
+            foreach (var id in keysToRemove)
+                toasted.Remove(id);
+
+            // add/update Toasts 
+            foreach (var w in watched)
+            {
+                String last;
+                if (toasted.TryGetValue(w.ID, out last))
+                {
+                    // see if updated
+                    if (w.LAST_DATE != last)
+                    {
+                        ShowWatchedToast(w);
+                        toasted[w.ID] = w.LAST_DATE;
+                    }
+                }
+                else
+                {
+                    // new
+                    ShowWatchedToast(w);
+                    toasted[w.ID] = w.LAST_DATE;
+                }
+            }
+
+            WriteToasted(toasted);
+        }
     }
 }
