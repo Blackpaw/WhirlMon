@@ -180,16 +180,34 @@ namespace WhirlMonData
         }
 
         // Watched Detail
+
+
         static public void ShowWatchedToast(WhirlPoolAPIData.WATCHED w)
         {
+            var title = w.TITLE_DECODED;
+            var unread = w.UNREAD;
+            var name = w.LAST.NAME;
+            var toastXML = $@"
+<toast>
+  <visual>
+    <binding template='ToastGeneric'>
+      <text>WhirlPool</text>
+      <text>{title} ({unread})</text>
+      <text>{name}</text>
+    </binding>
+  </visual>
+  <actions>
+    <action activationType='background' content='View' arguments='call'/>
+  </actions>
+</toast>";
+
+            var xml = new XmlDocument();
+            xml.LoadXml(toastXML);
+
             String text = String.Format("{0}, {1} - {2}", w.TITLE_DECODED, w.UNREAD, w.LAST.NAME);
             ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
 
-            ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;
-            XmlDocument toastXml = ToastNotificationManager.GetTemplateContent(toastTemplate);
-            XmlNodeList toastTextElements = toastXml.GetElementsByTagName("text");
-            toastTextElements[0].AppendChild(toastXml.CreateTextNode(text));
-            ToastNotification toast = new ToastNotification(toastXml);
+            ToastNotification toast = new ToastNotification(xml);
             toast.Tag = w.ID.ToString();
             tn.Show(toast);
         }
@@ -280,6 +298,10 @@ namespace WhirlMonData
         static public async void UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
         {
             ToastedDictionary toasted = await ReadToasted();
+
+
+            // Debug
+            //toasted.Clear();
 
             // Remove obsoleted toasts - iterate over toasted
             List<int> keysToRemove = new List<int>();
