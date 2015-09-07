@@ -106,28 +106,58 @@ namespace WhirlMonWatchedTask
 
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            WhirlPoolAPIClient.LoadConfig();
-            _deferral = taskInstance.GetDeferral();
+            try
+            {
+                WhirlPoolAPIClient.LoadConfig();
+                _deferral = taskInstance.GetDeferral();
 
-            await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll);
-
+                await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll);
+            }
+            catch (Exception x)
+            {
+                WhirlPoolAPIClient.ShowToast("MainBackground: " + x.Message);
+            }
             _deferral.Complete();
         }
     }
 
     public sealed class ToastBackground : IBackgroundTask
     {
-        //BackgroundTaskDeferral _deferral = null;
+        BackgroundTaskDeferral _deferral = null;
 
-        public void Run(IBackgroundTaskInstance taskInstance)
+        public async void Run(IBackgroundTaskInstance taskInstance)
         {
-            WhirlPoolAPIClient.ShowToast("Background Toast");
-            WhirlPoolAPIClient.LoadConfig();
-            /*_deferral = taskInstance.GetDeferral();
+            _deferral = taskInstance.GetDeferral();
 
-            await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll);
+            try
+            {
+                WhirlPoolAPIClient.LoadConfig();
+                var details = taskInstance.TriggerDetails as ToastNotificationActionTriggerDetail;
+                var arguments = details.Argument;
+                string[] args = arguments.Split(',');
+                string sid = args.Length > 0 ? args[0] : "";
+                string lastpage = args.Length > 1 ? args[1] : "";
+                string lastread = args.Length > 2 ? args[2] : "";
+                int id = 0;
+                int.TryParse(sid, out id);
 
-            _deferral.Complete();*/
+                if (lastpage != "")
+                {
+                    String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", sid, lastpage, lastread);
+                    var uri = new Uri(url);
+                    var success = await Windows.System.Launcher.LaunchUriAsync(uri);
+                    if (success)
+                        await WhirlPoolAPIClient.MarkThreadReadAsync(id, false);
+                }
+                else
+                    await WhirlPoolAPIClient.MarkThreadReadAsync(id, false);
+            }
+            catch (Exception x)
+            {
+                WhirlPoolAPIClient.ShowToast("ToastBackground: " + x.Message);
+            }
+
+            _deferral.Complete();
         }
     }
 

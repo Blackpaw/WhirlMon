@@ -137,7 +137,7 @@ namespace WhirlMonData
             }
         }
 
-        static public async void MarkThreadReadAsync(int id, bool issueRefresh)
+        static public async Task MarkThreadReadAsync(int id, bool issueRefresh)
         {
             if (APIKey == "")
                 return;
@@ -154,9 +154,9 @@ namespace WhirlMonData
                     await GetWatchedAsync();
 
             }
-            catch (Exception)
+            catch (Exception x)
             {
-                // TODO - Log error
+                ShowToast("MarkThreadRead: " + x.Message);
             }
         }
 
@@ -187,19 +187,24 @@ namespace WhirlMonData
             var title = w.TITLE_DECODED;
             var unread = w.UNREAD;
             var name = w.LAST.NAME;
+            var id = w.ID;
+            // arguments
+            var lastpage = w.LASTPAGE;
+            var lastread = w.LASTREAD;
+
             var toastXML = $@"
-<toast>
-  <visual>
-    <binding template='ToastGeneric'>
-      <text>WhirlPool</text>
-      <text>{title} ({unread})</text>
-      <text>{name}</text>
-    </binding>
-  </visual>
-  <actions>
-    <action activationType='background' content='View' arguments='call'/>
-  </actions>
-</toast>";
+                            <toast>
+                              <visual>
+                                <binding template='ToastGeneric'>
+                                  <text>{title} ({unread})</text>
+                                  <text>{name}</text>
+                                </binding>
+                              </visual>
+                              <actions>
+                                <action activationType='background' content='Mark Read' arguments='{id}'/>
+                                <action activationType='background' content='View' arguments='{id},{lastpage},{lastread}'/>
+                              </actions>
+                            </toast>";
 
             var xml = new XmlDocument();
             xml.LoadXml(toastXML);
@@ -298,10 +303,6 @@ namespace WhirlMonData
         static public async void UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
         {
             ToastedDictionary toasted = await ReadToasted();
-
-
-            // Debug
-            //toasted.Clear();
 
             // Remove obsoleted toasts - iterate over toasted
             List<int> keysToRemove = new List<int>();
