@@ -187,20 +187,6 @@ namespace WhirlMonApp
         }
 
 
-        static int GetOurId()
-        {
-            String[] x = WhirlMonData.WhirlPoolAPIClient.APIKey.Split('-');
-            if (x.Length > 0)
-            {
-                int id = -1;
-                int.TryParse(x[0], out id);
-                return id;
-            }
-            else
-                return -1;
-
-        }
-
         static public bool UpdateUIData(WhirlPoolAPIData.RootObject root)
         {
             synchronizationContext.Post(new SendOrPostCallback(o =>
@@ -213,7 +199,7 @@ namespace WhirlMonApp
                     // new
                     IEnumerable<WatchedThreads> watched =
                         from item in r.WATCHED
-                        where (!WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != GetOurId())
+                        where (!WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != WhirlPoolAPIClient.GetOurId())
                         group item by item.FORUM_NAME into threadGroup
                         select new WatchedThreads(threadGroup)
                         {

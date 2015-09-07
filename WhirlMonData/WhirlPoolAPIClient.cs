@@ -16,6 +16,20 @@ namespace WhirlMonData
     {
         static public String APIKey { get; set; }
 
+        static public int GetOurId()
+        {
+            String[] x = WhirlMonData.WhirlPoolAPIClient.APIKey.Split('-');
+            if (x.Length > 0)
+            {
+                int id = -1;
+                int.TryParse(x[0], out id);
+                return id;
+            }
+            else
+                return -1;
+        }
+
+
         static private bool _unreadOnly = true;
         static public bool UnReadOnly
         {
@@ -201,7 +215,14 @@ namespace WhirlMonData
 
         static public void ShowWatchedToast(WhirlPoolAPIData.WATCHED w)
         {
-            var title = w.TITLE_DECODED;
+            // Ignore own posts
+            if (IgnoreOwnPosts && w.LAST.ID == GetOurId())
+                return;
+            // Only if UI is not active
+            if (UpdateUI != null)
+                return;
+
+                var title = w.TITLE_DECODED;
             var unread = w.UNREAD;
             var name = w.LAST.NAME;
             var id = w.ID;
