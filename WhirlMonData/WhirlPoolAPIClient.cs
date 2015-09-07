@@ -154,14 +154,14 @@ namespace WhirlMonData
                         currentThreadState.Remove(fid);
 
                     // Generate toast notification if needed
-                    if (new_unread > 0)
+                    // Only for background thread now
+                    if (new_unread > 0 && UpdateUI == null)
                     {
                         string toastText = string.Format("{0} new messages", new_unread);
                         ShowToast(toastText);
                     }
 
 
-                    // TODO: WhirlMonApp.MainPage.UpdateUIData(data);
                     if (UpdateUI != null)
                         UpdateUI(data);
                 }
