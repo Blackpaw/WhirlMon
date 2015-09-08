@@ -137,7 +137,7 @@ namespace WhirlMonData
                 {
                     var data = (WhirlPoolAPIData.RootObject)serializer.ReadObject(ms);
 
-                    UpdateWatchedToasts(data.WATCHED);
+                    await UpdateWatchedToasts(data.WATCHED);
 
                     if (UpdateUI != null)
                         UpdateUI(data);
@@ -286,10 +286,14 @@ namespace WhirlMonData
 
         static private async Task<ToastedDictionary> ReadToasted()
         {
+            
             try
             {
                 Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
                 StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
+                if (!toastedFile.IsAvailable)
+                    return new ToastedDictionary();
+
                 String json = await FileIO.ReadTextAsync(toastedFile);
 
                 using (MemoryStream ms = new MemoryStream())
@@ -305,6 +309,10 @@ namespace WhirlMonData
                     }
                 }
             }
+            catch(FileNotFoundException)
+            {
+                return new ToastedDictionary();
+            }
             catch (Exception x)
             {
                 ShowToast("ReadToasted:" + x.Message);
@@ -313,7 +321,7 @@ namespace WhirlMonData
 
         }
 
-        static private async void WriteToasted(ToastedDictionary toasted)
+        static private async Task WriteToasted(ToastedDictionary toasted)
         {
             try
             {
@@ -330,7 +338,9 @@ namespace WhirlMonData
                 Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
                 StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
 
-                await FileIO.WriteTextAsync(toastedFile, json);
+                await FileIO.WriteTextAsync(toastedFile, json);                
+
+
             }
             catch (Exception x)
             {
@@ -338,50 +348,57 @@ namespace WhirlMonData
             }
         }
 
-        static public async void UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
+        static public async Task UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
         {
-            ToastedDictionary toasted = await ReadToasted();
-
-            // debug
-            // toasted.Clear();
-
-            // Remove obsoleted toasts - iterate over toasted
-            List<int> keysToRemove = new List<int>();
-            foreach (var id in toasted.Keys)
+            try
             {
-                // Find
-                var w = watched.Find(x => x.ID == id);
-                if (w == null)
-                {
-                    ClearWatchedToast(id);
-                    keysToRemove.Add(id);
-                }
-            }
-            foreach (var id in keysToRemove)
-                toasted.Remove(id);
+                ToastedDictionary toasted = await ReadToasted();
 
-            // add/update Toasts 
-            foreach (var w in watched)
-            {
-                String last;
-                if (toasted.TryGetValue(w.ID, out last))
+                // debug
+                // toasted.Clear();
+
+                // Remove obsoleted toasts - iterate over toasted
+                List<int> keysToRemove = new List<int>();
+                foreach (var id in toasted.Keys)
                 {
-                    // see if updated
-                    if (w.LAST_DATE != last)
+                    // Find
+                    var w = watched.Find(x => x.ID == id);
+                    if (w == null)
                     {
+                        ClearWatchedToast(id);
+                        keysToRemove.Add(id);
+                    }
+                }
+                foreach (var id in keysToRemove)
+                    toasted.Remove(id);
+
+                // add/update Toasts 
+                foreach (var w in watched)
+                {
+                    String last;
+                    if (toasted.TryGetValue(w.ID, out last))
+                    {
+                        // see if updated
+                        if (w.LAST_DATE != last)
+                        {
+                            ShowWatchedToast(w);
+                            toasted[w.ID] = w.LAST_DATE;
+                        }
+                    }
+                    else
+                    {
+                        // new
                         ShowWatchedToast(w);
                         toasted[w.ID] = w.LAST_DATE;
                     }
                 }
-                else
-                {
-                    // new
-                    ShowWatchedToast(w);
-                    toasted[w.ID] = w.LAST_DATE;
-                }
-            }
 
-            WriteToasted(toasted);
+                await WriteToasted(toasted);
+            }
+            catch(Exception x)
+            {
+                ShowErrorToast("UpdateWatchedToasts", x);
+            }
         }
     }
 }

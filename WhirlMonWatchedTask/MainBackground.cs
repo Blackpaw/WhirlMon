@@ -13,6 +13,7 @@ namespace WhirlMonWatchedTask
     public sealed class BackgroundTasks
     {
         static private string whirlMonWatchedTaskName = "whirlMonBackgroundWatchedTask";
+        static private string whirlMonWatchedTaskName2 = "whirlMonBackgroundWatchedTask2";
         static private string whirlMonToastTaskName = "whirlMonBackgroundToastTask";
 
         static BackgroundTaskRegistration backTask = null;
@@ -22,9 +23,21 @@ namespace WhirlMonWatchedTask
             var task = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(i => i.Name.Equals(whirlMonWatchedTaskName));
             if (task != null)
                 task.Unregister(true);
+            task = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(i => i.Name.Equals(whirlMonWatchedTaskName2));
+            if (task != null)
+                task.Unregister(true);
             task = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(i => i.Name.Equals(whirlMonToastTaskName));
             if (task != null)
                 task.Unregister(true);
+        }
+        static private bool IsRegistered(string name)
+        {
+            foreach (var task in Windows.ApplicationModel.Background.BackgroundTaskRegistration.AllTasks)
+            {
+                if (task.Value.Name == name)
+                    return true;
+            }
+            return false;
         }
         static public async void Register()
         {
@@ -32,18 +45,8 @@ namespace WhirlMonWatchedTask
             {
                 UnregisterBackgroundTasks();
 
-                bool taskRegistered = false;
-                // Watched Task
-                // Sanity check
-                foreach (var task in Windows.ApplicationModel.Background.BackgroundTaskRegistration.AllTasks)
-                {
-                    if (task.Value.Name == whirlMonWatchedTaskName)
-                    {
-                        taskRegistered = true;
-                        break;
-                    }
-                }
-                if (!taskRegistered)
+                // Internet Availble
+                if (!IsRegistered(whirlMonWatchedTaskName))
                 {
 
                     var builder = new BackgroundTaskBuilder();
@@ -52,6 +55,20 @@ namespace WhirlMonWatchedTask
                     builder.TaskEntryPoint = "WhirlMonWatchedTask.MainBackground";
 
                     builder.SetTrigger(new SystemTrigger(SystemTriggerType.InternetAvailable, false));
+
+                    await Windows.ApplicationModel.Background.BackgroundExecutionManager.RequestAccessAsync();
+
+                    backTask = builder.Register();
+                }
+
+                // Timer
+                if (!IsRegistered(whirlMonWatchedTaskName2))
+                {
+
+                    var builder = new BackgroundTaskBuilder();
+
+                    builder.Name = whirlMonWatchedTaskName2;
+                    builder.TaskEntryPoint = "WhirlMonWatchedTask.MainBackground";
 
                     TimeTrigger minTrigger = new TimeTrigger(15, false);
                     builder.SetTrigger(minTrigger);
@@ -62,17 +79,7 @@ namespace WhirlMonWatchedTask
                 }
 
                 // Toast Task
-                // Sanity check
-                taskRegistered = false;
-                foreach (var task in Windows.ApplicationModel.Background.BackgroundTaskRegistration.AllTasks)
-                {
-                    if (task.Value.Name == whirlMonToastTaskName)
-                    {
-                        taskRegistered = true;
-                        break;
-                    }
-                }
-                if (!taskRegistered)
+                if (!IsRegistered(whirlMonToastTaskName))
                 {
 
                     var builder = new BackgroundTaskBuilder();
@@ -102,20 +109,18 @@ namespace WhirlMonWatchedTask
 
     public sealed class MainBackground : IBackgroundTask
     {
-        BackgroundTaskDeferral _deferral = null;
-
         public async void Run(IBackgroundTaskInstance taskInstance)
         {
+            BackgroundTaskDeferral _deferral = taskInstance.GetDeferral();
             try
             {
                 WhirlPoolAPIClient.LoadConfig();
-                _deferral = taskInstance.GetDeferral();
 
                 await WhirlPoolAPIClient.GetDataAsync(WhirlPoolAPIClient.EWhirlPoolData.wpAll);
             }
             catch (Exception x)
             {
-                WhirlPoolAPIClient.ShowToast("MainBackground: " + x.Message);
+                WhirlPoolAPIClient.ShowErrorToast("MainBackground", x);
             }
             _deferral.Complete();
         }
@@ -154,7 +159,7 @@ namespace WhirlMonWatchedTask
             }
             catch (Exception x)
             {
-                WhirlPoolAPIClient.ShowToast("ToastBackground: " + x.Message);
+                WhirlPoolAPIClient.ShowErrorToast("ToastBackground", x);
             }
 
             _deferral.Complete();
