@@ -137,6 +137,7 @@ namespace WhirlMonData
                 {
                     var data = (WhirlPoolAPIData.RootObject)serializer.ReadObject(ms);
 
+                    UpdateWatchedBadge(data.WATCHED);
                     await UpdateWatchedToasts(data.WATCHED);
 
                     if (UpdateUI != null)
@@ -222,7 +223,7 @@ namespace WhirlMonData
             if (UpdateUI != null)
                 return;
 
-                var title = w.TITLE_DECODED;
+            var title = w.TITLE_DECODED;
             var unread = w.UNREAD;
             var name = w.LAST.NAME;
             var id = w.ID;
@@ -286,7 +287,7 @@ namespace WhirlMonData
 
         static private async Task<ToastedDictionary> ReadToasted()
         {
-            
+
             try
             {
                 Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
@@ -309,7 +310,7 @@ namespace WhirlMonData
                     }
                 }
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 return new ToastedDictionary();
             }
@@ -338,7 +339,7 @@ namespace WhirlMonData
                 Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
                 StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
 
-                await FileIO.WriteTextAsync(toastedFile, json);                
+                await FileIO.WriteTextAsync(toastedFile, json);
 
 
             }
@@ -348,6 +349,33 @@ namespace WhirlMonData
             }
         }
 
+        static public void UpdateWatchedBadge(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
+        {
+            try
+            {
+                int unread = 0;
+                foreach (var w in watched)
+                    unread += w.UNREAD;
+
+                if (unread == 0)
+                    BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();
+                else
+                {
+                    XmlDocument badgeXml = BadgeUpdateManager.GetTemplateContent(BadgeTemplateType.BadgeNumber);
+
+                    XmlElement badgeElement = (XmlElement)badgeXml.SelectSingleNode("/badge");
+                    badgeElement.SetAttribute("value", unread.ToString());
+
+                    BadgeNotification badge = new BadgeNotification(badgeXml);
+                    BadgeUpdateManager.CreateBadgeUpdaterForApplication().Update(badge);
+                }
+                
+            }
+            catch (Exception x)
+            {
+                ShowErrorToast("UpdateWatchedBadge", x);
+            }
+        }
         static public async Task UpdateWatchedToasts(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
         {
             try
@@ -395,7 +423,7 @@ namespace WhirlMonData
 
                 await WriteToasted(toasted);
             }
-            catch(Exception x)
+            catch (Exception x)
             {
                 ShowErrorToast("UpdateWatchedToasts", x);
             }
