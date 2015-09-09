@@ -148,7 +148,7 @@ namespace WhirlMonWatchedTask
 
                 if (lastpage != "")
                 {
-                    String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", sid, lastpage, lastread);
+                    String url = string.Format(@"http://forums.whirlpool.net.au/forum-replies.cfm?t={0}&p={1}&#r{2}", sid, lastpage, lastread + 1);
                     var uri = new Uri(url);
                     var success = await Windows.System.Launcher.LaunchUriAsync(uri);
                     if (success)

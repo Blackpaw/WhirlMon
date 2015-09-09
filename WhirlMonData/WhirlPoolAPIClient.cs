@@ -137,7 +137,21 @@ namespace WhirlMonData
                 {
                     var data = (WhirlPoolAPIData.RootObject)serializer.ReadObject(ms);
 
-                    UpdateWatchedBadge(data.WATCHED);
+                    // Preprocess
+                    data.totalUnread = 0;
+                    for (int i = data.WATCHED.Count - 1; i >= 0; i--)
+                    {
+                        WhirlMonData.WhirlPoolAPIData.WATCHED w = data.WATCHED[i];
+
+                        if (IgnoreOwnPosts && w.LAST.ID == GetOurId())
+                        {
+                            data.WATCHED.RemoveAt(i);
+                            continue;
+                        }
+                        data.totalUnread += w.UNREAD;
+                    }
+
+                    UpdateWatchedBadge(data);
                     await UpdateWatchedToasts(data.WATCHED);
 
                     if (UpdateUI != null)
@@ -216,9 +230,6 @@ namespace WhirlMonData
 
         static public void ShowWatchedToast(WhirlPoolAPIData.WATCHED w)
         {
-            // Ignore own posts
-            if (IgnoreOwnPosts && w.LAST.ID == GetOurId())
-                return;
             // Only if UI is not active
             if (UpdateUI != null)
                 return;
@@ -349,13 +360,11 @@ namespace WhirlMonData
             }
         }
 
-        static public void UpdateWatchedBadge(List<WhirlMonData.WhirlPoolAPIData.WATCHED> watched)
+        static public void UpdateWatchedBadge(WhirlMonData.WhirlPoolAPIData.RootObject data)
         {
             try
             {
-                int unread = 0;
-                foreach (var w in watched)
-                    unread += w.UNREAD;
+                int unread = data.totalUnread;
 
                 if (unread == 0)
                     BadgeUpdateManager.CreateBadgeUpdaterForApplication().Clear();

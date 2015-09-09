@@ -175,6 +175,8 @@ namespace WhirlMonData
 
         public class RootObject
         {
+            public int totalUnread = 0;
+
             public List<NEWS> NEWS { get; set; }
             public List<WATCHED> WATCHED { get; set; }
             public List<RECENT> RECENT { get; set; }

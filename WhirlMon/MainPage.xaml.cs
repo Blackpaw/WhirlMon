@@ -122,8 +122,9 @@ namespace WhirlMonApp
         {
             synchronizationContext.Post(new SendOrPostCallback(o =>
             {
-                progRing.IsActive = true;
-                bnRefresh.Visibility = Visibility.Collapsed;
+                pbNetwork.Visibility = Visibility.Visible;
+                pbNetwork.IsIndeterminate = true;
+                bnRefresh.IsEnabled = false;
             }), null);
 
             try
@@ -134,8 +135,9 @@ namespace WhirlMonApp
             {
                 synchronizationContext.Post(new SendOrPostCallback(o =>
                 {
-                    progRing.IsActive = false;
-                    bnRefresh.Visibility = Visibility.Visible;
+                    pbNetwork.IsIndeterminate = false;
+                    pbNetwork.Visibility = Visibility.Collapsed;
+                    bnRefresh.IsEnabled = true;
                 }), null);
             }
         }
@@ -199,7 +201,6 @@ namespace WhirlMonApp
                     // new
                     IEnumerable<WatchedThreads> watched =
                         from item in r.WATCHED
-                        where (!WhirlPoolAPIClient.IgnoreOwnPosts || item.LAST.ID != WhirlPoolAPIClient.GetOurId())
                         group item by item.FORUM_NAME into threadGroup
                         select new WatchedThreads(threadGroup)
                         {
@@ -360,9 +361,14 @@ namespace WhirlMonApp
 
         }
 
-        private void Refresh_Click(object sender, RoutedEventArgs e)
+        private void Refresh_Tapped(object sender, TappedRoutedEventArgs e)
         {
             DoRefresh();
+        }
+
+        private void Hamburger_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            mainSplitView.IsPaneOpen = !mainSplitView.IsPaneOpen;
         }
     }
 }

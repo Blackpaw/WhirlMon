@@ -128,8 +128,6 @@ namespace WhirlMonApp
             {
                 InitRoot(null, "");
 
-                //Initialize your app if not initialized;
-                //Find out if this is activated from a toast;
                 if (args.Kind == ActivationKind.ToastNotification)
                 {
                     var toastArgs = args as ToastNotificationActivatedEventArgs;
