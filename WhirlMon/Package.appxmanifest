@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="d7ff31eb-982e-487c-b567-ddf0cf612103" Publisher="CN=linds" Version="1.0.0.0" />
+  <Identity Name="4752BlackpawProductions.WhirlMon" Publisher="CN=0C143B75-CE67-4DDC-81BD-7E11A1C9CDF8" Version="1.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="d7ff31eb-982e-487c-b567-ddf0cf612103" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>WhirlMon</DisplayName>
-    <PublisherDisplayName>Blackpaw</PublisherDisplayName>
+    <PublisherDisplayName>Blackpaw Productions</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -43,6 +43,5 @@
   </Applications>
   <Capabilities>
     <Capability Name="internetClient" />
-    <Capability Name="privateNetworkClientServer" />
   </Capabilities>
 </Package>

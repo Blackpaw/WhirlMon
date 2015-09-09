@@ -55,6 +55,7 @@ namespace WhirlMonWatchedTask
                     builder.TaskEntryPoint = "WhirlMonWatchedTask.MainBackground";
 
                     builder.SetTrigger(new SystemTrigger(SystemTriggerType.InternetAvailable, false));
+                    builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
 
                     await Windows.ApplicationModel.Background.BackgroundExecutionManager.RequestAccessAsync();
 
@@ -72,6 +73,7 @@ namespace WhirlMonWatchedTask
 
                     TimeTrigger minTrigger = new TimeTrigger(15, false);
                     builder.SetTrigger(minTrigger);
+                    builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
 
                     await Windows.ApplicationModel.Background.BackgroundExecutionManager.RequestAccessAsync();
 
@@ -88,6 +90,7 @@ namespace WhirlMonWatchedTask
                     builder.TaskEntryPoint = "WhirlMonWatchedTask.ToastBackground";
 
                     builder.SetTrigger(new ToastNotificationActionTrigger());
+                    builder.AddCondition(new SystemCondition(SystemConditionType.InternetAvailable));
 
                     await Windows.ApplicationModel.Background.BackgroundExecutionManager.RequestAccessAsync();
 
