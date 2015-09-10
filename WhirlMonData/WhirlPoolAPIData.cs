@@ -119,6 +119,7 @@ namespace WhirlMonData
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
 
+            public string UNREAD_STATE { get { return "Visible"; } }
             public String LAST_DATE_D
             {
                 
@@ -161,6 +162,7 @@ namespace WhirlMonData
             public int REPLIES { get; set; }
             public string FIRST_DATE { get; set; }
 
+            public string UNREAD_STATE { get { return "Collapsed"; } }
             public int UNREAD { get; set; }
             public String LAST_DATE_D
             {
