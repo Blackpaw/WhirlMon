@@ -57,6 +57,7 @@ namespace WhirlMonData
             }
         }
 
+        static public bool ShowDebugToasts { get; set; }
 
         // Config Stuff
         static public void LoadConfig()
@@ -70,6 +71,10 @@ namespace WhirlMonData
                 UnReadOnly = (Boolean)localSettings.Values["unreadonly"];
             if (localSettings.Values.ContainsKey("ignoreown"))
                 IgnoreOwnPosts = (Boolean)localSettings.Values["ignoreown"];
+            if (localSettings.Values.ContainsKey("showdebugtoasts"))
+                ShowDebugToasts = (Boolean)localSettings.Values["showdebugtoasts"];
+            else
+                ShowDebugToasts = false;
         }
 
         static public void SaveConfig()
@@ -80,6 +85,7 @@ namespace WhirlMonData
             ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
             localSettings.Values["unreadonly"] = UnReadOnly;
             localSettings.Values["ignoreown"] = IgnoreOwnPosts;
+            localSettings.Values["showdebugtoasts"] = ShowDebugToasts;
         }
 
 
@@ -201,6 +207,9 @@ namespace WhirlMonData
 
         static public void ShowDebugToast(string toastText)
         {
+            if (!ShowDebugToasts)
+                return;
+
             ToastNotifier tn = ToastNotificationManager.CreateToastNotifier();
 
             ToastTemplateType toastTemplate = ToastTemplateType.ToastText01;

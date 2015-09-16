@@ -60,6 +60,7 @@
                                         <!-- <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch> -->
                                         <!-- Ignore own posts-->
                                         <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
+                                        <ToggleSwitch IsOn="{x:Bind CFG_ShowDebugToasts, Mode=TwoWay}">Show Debug Notifications</ToggleSwitch>
                                     </StackPanel>
                                 </Flyout>
                             </AppBarButton.Flyout>

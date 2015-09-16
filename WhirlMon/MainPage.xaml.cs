@@ -88,6 +88,16 @@ namespace WhirlMonApp
             }
         }
 
+        bool CFG_ShowDebugToasts
+        {
+            get { return WhirlPoolAPIClient.ShowDebugToasts; }
+            set
+            {
+                WhirlPoolAPIClient.ShowDebugToasts = value;
+            }
+        }
+
+
         void InitHandlers()
         {
             Windows.Storage.ApplicationData.Current.DataChanged +=

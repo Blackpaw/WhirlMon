@@ -24,11 +24,10 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock  TextTrimming="CharacterEllipsis">
+            <TextBlock TextTrimming="CharacterEllipsis">
                                     <Run Text="{Binding TITLE_DECODED}" Foreground="Cyan"/>
-                                    <Run Text=" - "/>
-                                    <Run Text="{Binding SOURCE}"/>
             </TextBlock>
+            <TextBlock Grid.Column="1" Text="{Binding SOURCE}"  Foreground="Cyan" FontStyle="Italic" HorizontalAlignment="Right"/>
             <TextBlock Grid.Row="1" Text="{Binding BLURB}" TextWrapping="WrapWholeWords"/>
 
         </Grid>
