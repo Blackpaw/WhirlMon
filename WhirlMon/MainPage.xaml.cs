@@ -118,7 +118,7 @@ namespace WhirlMonApp
             {
                 WhirlPoolAPIClient.ClearToast();
                 if (WhirlPoolAPIClient.APIKey == "")
-                    flyConfig.ShowAt(bnConfig);
+                    ShowConfig();
             }
         }
         
@@ -379,6 +379,30 @@ namespace WhirlMonApp
         private void Hamburger_Tapped(object sender, TappedRoutedEventArgs e)
         {
             mainSplitView.IsPaneOpen = !mainSplitView.IsPaneOpen;
+        }
+
+        void ShowHome()
+        {
+            pnMain.Visibility = Visibility.Visible;
+            pnConfig.Visibility = Visibility.Collapsed;
+        }
+
+        void ShowConfig()
+        {
+            pnMain.Visibility = Visibility.Collapsed;
+            pnConfig.Visibility = Visibility.Visible;
+        }
+
+        private void Config_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            mainSplitView.IsPaneOpen = false;
+            ShowConfig();
+        }
+
+        private void Home_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            mainSplitView.IsPaneOpen = false;
+            ShowHome();
         }
     }
 }

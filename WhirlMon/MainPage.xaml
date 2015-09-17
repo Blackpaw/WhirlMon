@@ -17,7 +17,6 @@
                     <VisualState.Setters>
                         <Setter Target="mainSplitView.DisplayMode" Value="CompactOverlay"/>
                         <Setter Target="bnHamburger1.Visibility" Value="Visible"/>
-                        <Setter Target="bnHamburger2.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState>
@@ -27,101 +26,117 @@
                     <VisualState.Setters>
                         <Setter Target="mainSplitView.DisplayMode" Value="Overlay"/>
                         <Setter Target="bnHamburger1.Visibility" Value="Visible"/>
-                        <Setter Target="bnHamburger2.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
 
-        <SplitView  x:Name="mainSplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" CompactPaneLength="50" OpenPaneLength="150">
-            <SplitView.Pane>
-                <StackPanel Background="Gray">
-                    <Button x:Name="bnHamburger1" FontFamily="Segoe MDL2 Assets" Content="&#xE700;" Width="50" Height="50" Background="Transparent" Tapped="Hamburger_Tapped"/>
-                    <StackPanel Orientation="Horizontal" Tapped="Refresh_Tapped">
-                        <AppBarButton Icon="Refresh" x:Name="bnRefresh" Width="50" Height="50" Background="Transparent"/>
-                        <TextBlock Text="Refresh" FontSize="18" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <AppBarButton Icon="Setting" Width="50" Height="50" Background="Transparent" x:Name="bnConfig">
-                            <AppBarButton.Flyout>
-                                <Flyout Closed="CFGFlyout_Closed" x:Name="flyConfig">
-                                    <StackPanel Padding="10">
-                                        <StackPanel.Resources>
-                                            <Style TargetType="ToggleSwitch">
-                                                <Setter Property="Margin" Value="0,10,0,0"/>
-                                            </Style>
-                                        </StackPanel.Resources>
-                                        <!-- API Key-->
-                                        <TextBlock>API Key</TextBlock>
-                                        <TextBox x:Name="edAPIKey" Text="{x:Bind CFG_APIKey, Mode=TwoWay}"/>
-                                        <!-- Unread Only-->
-                                        <ToggleSwitch x:Name="cbUnreadOnly" IsOn="{x:Bind CFG_UnReadOnly, Mode=TwoWay}">Unread Only</ToggleSwitch>
-                                        <!-- Limit to Wireless-->
-                                        <!-- <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch> -->
-                                        <!-- Ignore own posts-->
-                                        <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
-                                        <ToggleSwitch IsOn="{x:Bind CFG_ShowDebugToasts, Mode=TwoWay}">Show Debug Notifications</ToggleSwitch>
-                                    </StackPanel>
-                                </Flyout>
-                            </AppBarButton.Flyout>
-                        </AppBarButton>
-                        <TextBlock Text="Settings" FontSize="18" VerticalAlignment="Center" />
-                    </StackPanel>
-                </StackPanel>
-            </SplitView.Pane>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button Background="Gray"  x:Name="bnHamburger1" FontFamily="Segoe MDL2 Assets" Content="&#xE700;" Width="50" Height="50" Tapped="Hamburger_Tapped"/>
+            <SplitView  x:Name="mainSplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" CompactPaneLength="50" OpenPaneLength="150" Grid.Row="1">
+                <SplitView.Pane>
+                    <Grid Background="Gray">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Grid.Row="0">
+                            <StackPanel Orientation="Horizontal" Tapped="Home_Tapped">
+                                <AppBarButton Icon="Home" x:Name="bnHome" Width="50" Height="50" Background="Transparent"/>
+                                <TextBlock Text="Watched" FontSize="18" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Tapped="Config_Tapped" Grid.Row="2">
+                            <AppBarButton Icon="Setting" Width="50" Height="50" Background="Transparent" x:Name="bnConfig"/>
+                            <TextBlock Text="Settings" FontSize="18" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Grid>
+                </SplitView.Pane>
 
-            <SplitView.Content>
-                <Grid>
-                    <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" x:Name="pbNetwork"/>
-                    <Pivot>
-                        <Pivot.LeftHeader>
-                            <Button x:Name="bnHamburger2" FontFamily="Segoe MDL2 Assets" Content="&#xE700;" Width="50" Height="50" Background="Transparent" Tapped="Hamburger_Tapped"/>
-                        </Pivot.LeftHeader>
-                        <!-- Watched -->
-                        <PivotItem Header="Watched">
-                            <ListView x:Name="lvWatched"  
+                <SplitView.Content>
+                    <StackPanel>
+                        <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" x:Name="pbNetwork"/>
+                        <Pivot x:Name="pnMain" Visibility="Visible">
+                            <Pivot.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding}">
+                                        <TextBlock.RenderTransform>
+                                            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+                                        </TextBlock.RenderTransform>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </Pivot.HeaderTemplate>
+                            <Pivot.LeftHeader>
+                                <StackPanel Orientation="Horizontal">
+                                    <AppBarButton Icon="Refresh" x:Name="bnRefresh" Width="50" Height="50" Background="Transparent" Tapped="Refresh_Tapped"/>
+                                </StackPanel>
+                            </Pivot.LeftHeader>
+                            <!-- Watched -->
+                            <PivotItem Header="Watched">
+                                <ListView x:Name="lvWatched"  
                           ItemsSource="{Binding Source={StaticResource srcWatched}}" 
                           ItemContainerStyle="{StaticResource StretchListViewItem}" 
                           ItemTemplate="{StaticResource threadItems}"
                           Tapped="Watched_Tapped">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
-                                </ListView.GroupStyle>
-                            </ListView>
-                        </PivotItem>
+                                    <ListView.GroupStyle>
+                                        <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
+                                    </ListView.GroupStyle>
+                                </ListView>
+                            </PivotItem>
 
-                        <!-- News -->
-                        <PivotItem Header="News">
-                            <ListView x:Name="lvNews"
+                            <!-- News -->
+                            <PivotItem Header="News">
+                                <ListView x:Name="lvNews"
                           ItemsSource="{Binding Source={StaticResource srcNews}}" 
                           ItemTemplate="{StaticResource newsItems}" 
                           ItemContainerStyle="{StaticResource StretchListViewItem}" 
                           Tapped="News_Tapped">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HeaderTemplate="{StaticResource newsHeader}" HeaderContainerStyle="{StaticResource StretchListViewHeader}"/>
-                                </ListView.GroupStyle>
-                            </ListView>
-                        </PivotItem>
+                                    <ListView.GroupStyle>
+                                        <GroupStyle HeaderTemplate="{StaticResource newsHeader}" HeaderContainerStyle="{StaticResource StretchListViewHeader}"/>
+                                    </ListView.GroupStyle>
+                                </ListView>
+                            </PivotItem>
 
-                        <!-- Recent -->
-                        <PivotItem Header="Recent">
-                            <ListView x:Name="lvRecent"  
+                            <!-- Recent -->
+                            <PivotItem Header="Recent">
+                                <ListView x:Name="lvRecent"  
                           ItemsSource="{Binding Source={StaticResource srcRecent}}" 
                           ItemContainerStyle="{StaticResource StretchListViewItem}" 
                           ItemTemplate="{StaticResource threadItems}"
                           Tapped="Watched_Tapped">
-                                <ListView.GroupStyle>
-                                    <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
-                                </ListView.GroupStyle>
-                            </ListView>
-                        </PivotItem>
-                    </Pivot>
+                                    <ListView.GroupStyle>
+                                        <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
+                                    </ListView.GroupStyle>
+                                </ListView>
+                            </PivotItem>
+                        </Pivot>
+                        <StackPanel Padding="10" x:Name="pnConfig" Visibility="Collapsed">
+                            <StackPanel.Resources>
+                                <Style TargetType="ToggleSwitch">
+                                    <Setter Property="Margin" Value="0,10,0,0"/>
+                                </Style>
+                            </StackPanel.Resources>
+                            <!-- API Key-->
+                            <TextBlock>API Key</TextBlock>
+                            <TextBox x:Name="edAPIKey" Text="{x:Bind CFG_APIKey, Mode=TwoWay}"/>
+                            <!-- Unread Only-->
+                            <ToggleSwitch x:Name="cbUnreadOnly" IsOn="{x:Bind CFG_UnReadOnly, Mode=TwoWay}">Unread Only</ToggleSwitch>
+                            <!-- Limit to Wireless-->
+                            <!-- <ToggleSwitch x:Name="cbLimitToWireless">Limit to Wireless</ToggleSwitch> -->
+                            <!-- Ignore own posts-->
+                            <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
+                            <ToggleSwitch IsOn="{x:Bind CFG_ShowDebugToasts, Mode=TwoWay}">Show Debug Notifications</ToggleSwitch>
+                        </StackPanel>
+                    </StackPanel>
+                </SplitView.Content>
 
-
-                </Grid>
-            </SplitView.Content>
-
-        </SplitView>
+            </SplitView>
+        </Grid>
     </Grid>
 
 </Page>
