@@ -52,18 +52,13 @@ namespace WhirlMonApp
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
         }
 
-        // Properties / events
-        private void CFGFlyout_Closed(object sender, object e)
-        {
-            WhirlMonData.WhirlPoolAPIClient.SaveConfig();
-        }
-
         string CFG_APIKey
         {
             get { return WhirlMonData.WhirlPoolAPIClient.APIKey; }
             set
             {
                 WhirlPoolAPIClient.APIKey = value.Trim();
+                WhirlMonData.WhirlPoolAPIClient.SaveConfig();
                 var t = WhirlPoolAPIClient.GetDataAsync();
             }
         }
@@ -74,6 +69,7 @@ namespace WhirlMonApp
             set
             {
                 WhirlPoolAPIClient.UnReadOnly = value;
+                WhirlMonData.WhirlPoolAPIClient.SaveConfig();
                 var t = WhirlPoolAPIClient.GetWatchedAsync();
             }
         }
@@ -84,6 +80,7 @@ namespace WhirlMonApp
             set
             {
                 WhirlPoolAPIClient.IgnoreOwnPosts = value;
+                WhirlMonData.WhirlPoolAPIClient.SaveConfig();
                 var t = WhirlPoolAPIClient.GetWatchedAsync();
             }
         }
@@ -94,6 +91,7 @@ namespace WhirlMonApp
             set
             {
                 WhirlPoolAPIClient.ShowDebugToasts = value;
+                WhirlMonData.WhirlPoolAPIClient.SaveConfig();
             }
         }
 

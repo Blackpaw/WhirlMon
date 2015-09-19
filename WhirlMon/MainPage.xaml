@@ -59,7 +59,7 @@
                 </SplitView.Pane>
 
                 <SplitView.Content>
-                    <StackPanel>
+                    <Grid>
                         <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" x:Name="pbNetwork"/>
                         <Pivot x:Name="pnMain" Visibility="Visible">
                             <Pivot.HeaderTemplate>
@@ -132,7 +132,7 @@
                             <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
                             <ToggleSwitch IsOn="{x:Bind CFG_ShowDebugToasts, Mode=TwoWay}">Show Debug Notifications</ToggleSwitch>
                         </StackPanel>
-                    </StackPanel>
+                    </Grid>
                 </SplitView.Content>
 
             </SplitView>
