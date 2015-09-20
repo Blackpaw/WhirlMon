@@ -4,9 +4,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:WhirlMonApp"
     RequestedTheme="Dark">
-    
+
     <Application.Resources>
         <ResourceDictionary>
+            <Style TargetType="PivotHeaderItem">
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+
             <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
             <CollectionViewSource x:Key="srcNews" IsSourceGrouped="True" />
             <CollectionViewSource x:Key="srcRecent" IsSourceGrouped="True" />

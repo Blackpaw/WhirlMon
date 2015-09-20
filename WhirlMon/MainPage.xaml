@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-
+    
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WideState">
@@ -36,7 +36,16 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Button Background="Gray"  x:Name="bnHamburger1" FontFamily="Segoe MDL2 Assets" Content="&#xE700;" Width="50" Height="50" Tapped="Hamburger_Tapped"/>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Background="Gray"  x:Name="bnHamburger1" FontFamily="Segoe MDL2 Assets" Content="&#xE700;" Width="50" Height="50" Tapped="Hamburger_Tapped"/>
+                <TextBlock Grid.Column="1" Text="Groups" x:Name="lbContent" Padding="{ThemeResource PivotHeaderItemMargin}" VerticalAlignment="Center" FontWeight="Bold"/>
+                <AppBarButton Grid.Column="2" Icon="Refresh" x:Name="bnRefresh" Width="50" Height="50" Background="Transparent" Tapped="Refresh_Tapped"/>
+            </Grid>
             <SplitView  x:Name="mainSplitView" DisplayMode="CompactOverlay"  IsPaneOpen="False" CompactPaneLength="50" OpenPaneLength="150" Grid.Row="1">
                 <SplitView.Pane>
                     <Grid Background="Gray">
@@ -60,22 +69,8 @@
 
                 <SplitView.Content>
                     <Grid>
-                        <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" x:Name="pbNetwork"/>
+                        <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" Background="Transparent" x:Name="pbNetwork"/>
                         <Pivot x:Name="pnMain" Visibility="Visible">
-                            <Pivot.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding}">
-                                        <TextBlock.RenderTransform>
-                                            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
-                                        </TextBlock.RenderTransform>
-                                    </TextBlock>
-                                </DataTemplate>
-                            </Pivot.HeaderTemplate>
-                            <Pivot.LeftHeader>
-                                <StackPanel Orientation="Horizontal">
-                                    <AppBarButton Icon="Refresh" x:Name="bnRefresh" Width="50" Height="50" Background="Transparent" Tapped="Refresh_Tapped"/>
-                                </StackPanel>
-                            </Pivot.LeftHeader>
                             <!-- Watched -->
                             <PivotItem Header="Watched">
                                 <ListView x:Name="lvWatched"  

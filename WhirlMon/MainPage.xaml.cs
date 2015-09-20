@@ -50,6 +50,8 @@ namespace WhirlMonApp
             tmRefresh = new Timer(TimerRefresh, this, 1000, 1000 * 60 * 5);
 
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
+
+            ShowHome();
         }
 
         string CFG_APIKey
@@ -143,8 +145,8 @@ namespace WhirlMonApp
             {
                 synchronizationContext.Post(new SendOrPostCallback(o =>
                 {
-                    pbNetwork.IsIndeterminate = false;
                     pbNetwork.Visibility = Visibility.Collapsed;
+                    pbNetwork.IsIndeterminate = false;
                     bnRefresh.IsEnabled = true;
                 }), null);
             }
@@ -381,12 +383,14 @@ namespace WhirlMonApp
 
         void ShowHome()
         {
+            lbContent.Text = "Groups";
             pnMain.Visibility = Visibility.Visible;
             pnConfig.Visibility = Visibility.Collapsed;
         }
 
         void ShowConfig()
         {
+            lbContent.Text = "Config";
             pnMain.Visibility = Visibility.Collapsed;
             pnConfig.Visibility = Visibility.Visible;
         }
