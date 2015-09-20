@@ -385,6 +385,15 @@ namespace WhirlMonApp
         {
             lbContent.Text = "Groups";
             pnMain.Visibility = Visibility.Visible;
+            lvNews.Visibility = Visibility.Collapsed;
+            pnConfig.Visibility = Visibility.Collapsed;
+        }
+
+        void ShowNews()
+        {
+            lbContent.Text = "News";
+            pnMain.Visibility = Visibility.Collapsed;
+            lvNews.Visibility = Visibility.Visible;
             pnConfig.Visibility = Visibility.Collapsed;
         }
 
@@ -392,6 +401,7 @@ namespace WhirlMonApp
         {
             lbContent.Text = "Config";
             pnMain.Visibility = Visibility.Collapsed;
+            lvNews.Visibility = Visibility.Collapsed;
             pnConfig.Visibility = Visibility.Visible;
         }
 
@@ -405,6 +415,11 @@ namespace WhirlMonApp
         {
             mainSplitView.IsPaneOpen = false;
             ShowHome();
+        }
+        private void ShowNews_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            mainSplitView.IsPaneOpen = false;
+            ShowNews();
         }
     }
 }

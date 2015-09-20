@@ -51,6 +51,7 @@
                     <Grid Background="Gray">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
@@ -60,7 +61,11 @@
                                 <TextBlock Text="Watched" FontSize="18" VerticalAlignment="Center" />
                             </StackPanel>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" Tapped="Config_Tapped" Grid.Row="2">
+                        <StackPanel Orientation="Horizontal" Tapped="ShowNews_Tapped" Grid.Row="1">
+                            <AppBarButton Icon="World" Width="50" Height="50" Background="Transparent" x:Name="bnNews"/>
+                            <TextBlock Text="News" FontSize="18" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Tapped="Config_Tapped" Grid.Row="3">
                             <AppBarButton Icon="Setting" Width="50" Height="50" Background="Transparent" x:Name="bnConfig"/>
                             <TextBlock Text="Settings" FontSize="18" VerticalAlignment="Center" />
                         </StackPanel>
@@ -84,19 +89,6 @@
                                 </ListView>
                             </PivotItem>
 
-                            <!-- News -->
-                            <PivotItem Header="News">
-                                <ListView x:Name="lvNews"
-                          ItemsSource="{Binding Source={StaticResource srcNews}}" 
-                          ItemTemplate="{StaticResource newsItems}" 
-                          ItemContainerStyle="{StaticResource StretchListViewItem}" 
-                          Tapped="News_Tapped">
-                                    <ListView.GroupStyle>
-                                        <GroupStyle HeaderTemplate="{StaticResource newsHeader}" HeaderContainerStyle="{StaticResource StretchListViewHeader}"/>
-                                    </ListView.GroupStyle>
-                                </ListView>
-                            </PivotItem>
-
                             <!-- Recent -->
                             <PivotItem Header="Recent">
                                 <ListView x:Name="lvRecent"  
@@ -110,6 +102,19 @@
                                 </ListView>
                             </PivotItem>
                         </Pivot>
+
+                        <!-- News -->
+                            <ListView x:Name="lvNews" Visibility="Collapsed"
+                          ItemsSource="{Binding Source={StaticResource srcNews}}" 
+                          ItemTemplate="{StaticResource newsItems}" 
+                          ItemContainerStyle="{StaticResource StretchListViewItem}" 
+                          Tapped="News_Tapped">
+                                <ListView.GroupStyle>
+                                    <GroupStyle HeaderTemplate="{StaticResource newsHeader}" HeaderContainerStyle="{StaticResource StretchListViewHeader}"/>
+                                </ListView.GroupStyle>
+                            </ListView>
+                        
+                        <!-- Config -->
                         <StackPanel Padding="10" x:Name="pnConfig" Visibility="Collapsed">
                             <StackPanel.Resources>
                                 <Style TargetType="ToggleSwitch">
