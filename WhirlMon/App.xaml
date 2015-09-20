@@ -11,6 +11,8 @@
                 <Setter Property="FontSize" Value="15" />
             </Style>
 
+            <x:Double x:Key="minWidth">700</x:Double>
+            
             <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
             <CollectionViewSource x:Key="srcNews" IsSourceGrouped="True" />
             <CollectionViewSource x:Key="srcRecent" IsSourceGrouped="True" />
@@ -23,6 +25,7 @@
                 <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
             </Style>
 
+            
 
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ResourceNews.xaml"/>

@@ -10,7 +10,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" Text="{Binding DOW}" FontWeight="Bold"/>
-            <TextBlock Grid.Column="1" Text="{Binding SHORTDATE}" FontWeight="Bold" HorizontalAlignment="Right"/>
+            <TextBlock Grid.Column="1" Text="{Binding SHORTDATE}" FontWeight="Bold" HorizontalAlignment="Right" x:Name="lbNewsSrc"/>
         </Grid>
     </DataTemplate>
 
@@ -21,6 +21,7 @@
                 <ColumnDefinition Width="auto"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>

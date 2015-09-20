@@ -12,11 +12,10 @@
             <VisualStateGroup x:Name="WideState">
                 <VisualState>
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="600"/>
+                        <AdaptiveTrigger MinWindowWidth="{StaticResource minWidth}"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="mainSplitView.DisplayMode" Value="CompactOverlay"/>
-                        <Setter Target="bnHamburger1.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
                 <VisualState>
@@ -25,7 +24,6 @@
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
                         <Setter Target="mainSplitView.DisplayMode" Value="Overlay"/>
-                        <Setter Target="bnHamburger1.Visibility" Value="Visible"/>
                     </VisualState.Setters>
                 </VisualState>
             </VisualStateGroup>
