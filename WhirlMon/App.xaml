@@ -11,7 +11,7 @@
                 <Setter Property="FontSize" Value="15" />
             </Style>
 
-            <x:Double x:Key="minWidth">700</x:Double>
+            <x:Double x:Key="minWidth">400</x:Double>
             
             <CollectionViewSource x:Key="srcWatched" IsSourceGrouped="True" />
             <CollectionViewSource x:Key="srcNews" IsSourceGrouped="True" />

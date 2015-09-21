@@ -51,6 +51,13 @@ namespace WhirlMonApp
 
             Window.Current.VisibilityChanged += Current_VisibilityChanged;
 
+
+            if (CFG_UnReadOnly)
+                lvWatchedHeader.Header = "Unread";
+            else
+                lvWatchedHeader.Header = "All";
+
+
             ShowHome();
         }
 
@@ -73,6 +80,10 @@ namespace WhirlMonApp
                 WhirlPoolAPIClient.UnReadOnly = value;
                 WhirlMonData.WhirlPoolAPIClient.SaveConfig();
                 var t = WhirlPoolAPIClient.GetWatchedAsync();
+                if (value)
+                    lvWatchedHeader.Header = "Unread";
+                else
+                    lvWatchedHeader.Header = "All";
             }
         }
 
@@ -253,12 +264,7 @@ namespace WhirlMonApp
 
                                 // Update?
                                 if (!wItem.Equals(_w))
-                                {
-                                    wItem.LAST = _w.LAST;
-                                    wItem.LAST_DATE = _w.LAST_DATE;
-                                    wItem.UNREAD = _w.UNREAD;
-                                    grp[tIdx] = wItem;
-                                }
+                                    grp[tIdx] = _w;
                             }
 
                             // Check for new Threads
@@ -383,7 +389,7 @@ namespace WhirlMonApp
 
         void ShowHome()
         {
-            lbContent.Text = "Groups";
+            lbContent.Text = "Watched";
             pnMain.Visibility = Visibility.Visible;
             lvNews.Visibility = Visibility.Collapsed;
             pnConfig.Visibility = Visibility.Collapsed;

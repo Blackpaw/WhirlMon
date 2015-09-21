@@ -75,7 +75,7 @@
                         <ProgressBar IsIndeterminate="false" Visibility="Collapsed" VerticalAlignment="Top" Background="Transparent" x:Name="pbNetwork"/>
                         <Pivot x:Name="pnMain" Visibility="Visible">
                             <!-- Watched -->
-                            <PivotItem Header="Watched">
+                            <PivotItem Header="Unread" x:Name="lvWatchedHeader">
                                 <ListView x:Name="lvWatched"  
                           ItemsSource="{Binding Source={StaticResource srcWatched}}" 
                           ItemContainerStyle="{StaticResource StretchListViewItem}" 

@@ -23,7 +23,7 @@
                 </TextBlock>
                 <TextBlock Visibility="{Binding UNREAD_STATE}" Grid.Column="1" Text="{Binding UNREAD}" HorizontalAlignment="Right" Margin="2,0,0,0"/>
             </Grid>
-            <TextBlock Grid.Row="1">
+            <TextBlock Grid.Row="1" Visibility="Collapsed">
                 <Run Text="LastPage="/>
                 <Run Text="{Binding LASTPAGE}"/>
                 <Run Text=", LastRead="/>
