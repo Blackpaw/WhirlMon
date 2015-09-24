@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
-    
+
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup x:Name="WideState">
@@ -80,10 +80,18 @@
                           ItemsSource="{Binding Source={StaticResource srcWatched}}" 
                           ItemContainerStyle="{StaticResource StretchListViewItem}" 
                           ItemTemplate="{StaticResource threadItems}"
-                          Tapped="Watched_Tapped">
+                          Tapped="Watched_Tapped"
+                          IsRightTapEnabled="True"
+                          RightTapped="lvWatched_RightTapped">
                                     <ListView.GroupStyle>
                                         <GroupStyle HeaderTemplate="{StaticResource ThreadsHeader}"/>
                                     </ListView.GroupStyle>
+                                    <FlyoutBase.AttachedFlyout>
+                                        <MenuFlyout x:Name="mnuWatched">
+                                            <MenuFlyoutItem Text="Mark Read" x:Name="mnuMarkRead" Click="mnuMarkRead_Click"/>
+                                            <MenuFlyoutItem Text="Unsubscribe" x:Name="mnuUnsubscribe" Click="mnuUnsubscribe_Click"/>
+                                        </MenuFlyout>
+                                    </FlyoutBase.AttachedFlyout>
                                 </ListView>
                             </PivotItem>
 

@@ -354,7 +354,7 @@ namespace WhirlMonApp
                 var uri = new Uri(url);
                 var success = await Windows.System.Launcher.LaunchUriAsync(uri);
             }
-            else
+            else if (fe.Tag != null)
             {
                 // Forum Header Click
                 String url = String.Format(@"https://forums.whirlpool.net.au/forum/{0}", fe.Tag);
@@ -426,6 +426,51 @@ namespace WhirlMonApp
         {
             mainSplitView.IsPaneOpen = false;
             ShowNews();
+        }
+
+        private void lvWatched_RightTapped(object sender, RightTappedRoutedEventArgs e)
+        {
+            FrameworkElement fe = e.OriginalSource as FrameworkElement;
+            if (fe == null)
+                return;
+            if (! (fe.DataContext is WhirlPoolAPIData.WATCHED))
+                return;
+
+            foreach (var m in mnuWatched.Items)
+                m.Tag = fe.DataContext;
+
+            mnuWatched.ShowAt(lvWatched, e.GetPosition(lvWatched));
+        }
+
+
+
+        private async void mnuMarkRead_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = sender as FrameworkElement;
+            if (fe == null)
+                return;
+
+            if (fe.Tag is WhirlPoolAPIData.WATCHED)
+            {
+                WhirlPoolAPIData.WATCHED watched = (WhirlPoolAPIData.WATCHED)fe.Tag;
+
+                await WhirlPoolAPIClient.MarkThreadReadAsync(watched.ID, true);
+            }
+
+        }
+
+        private async void mnuUnsubscribe_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement fe = sender as FrameworkElement;
+            if (fe == null)
+                return;
+
+            if (fe.Tag is WhirlPoolAPIData.WATCHED)
+            {
+                WhirlPoolAPIData.WATCHED watched = (WhirlPoolAPIData.WATCHED)fe.Tag;
+
+                await WhirlPoolAPIClient.UnsubscribeThreadAsync(watched.ID, true);
+            }
         }
     }
 }

@@ -195,6 +195,31 @@ namespace WhirlMonData
             }
         }
 
+        static public async Task UnsubscribeThreadAsync(int id, bool issueRefresh)
+        {
+            if (APIKey == "")
+                return;
+            try
+            {
+                string url = String.Format("http://whirlpool.net.au/api/?key={0}&watchedremove={1}", APIKey, id);
+
+                var asyncClient = new HttpClient();
+                asyncClient.DefaultRequestHeaders.Add("User-Agent",
+                                 "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident / 6.0)");
+                String json = await asyncClient.GetStringAsync(url);
+
+                if (issueRefresh)
+                    await GetWatchedAsync();
+
+            }
+            catch (Exception x)
+            {
+                ShowToast("MarkThreadRead: " + x.Message);
+            }
+        }
+
+
+
         static public void ClearToast()
         {
             ToastNotificationManager.History.Remove("1", "general");
