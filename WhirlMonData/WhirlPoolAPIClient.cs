@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Xml.Dom;
 using Windows.Storage;
@@ -330,18 +331,41 @@ namespace WhirlMonData
 
         class ToastedDictionary : Dictionary<int, string> { }
 
+
         static private async Task<ToastedDictionary> ReadToasted()
         {
 
             try
             {
-                Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
-                StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
-                if (!toastedFile.IsAvailable)
+                Semaphore semFile = new Semaphore(1, 1, "toasted.json.sem");
+
+                if (!semFile.WaitOne(2000))
+                    throw new Exception("Failed to accquire toast access Semaphore");
+
+                String json = null;
+                try
+                {
+                    Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                    StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
+                    if (!toastedFile.IsAvailable)
+                        return new ToastedDictionary();
+
+                    json = await FileIO.ReadTextAsync(toastedFile);
+                }
+                finally
+                {
+                    semFile.Release();
+                }
+
+                // Sanity checks
+                if (json == null)
                     return new ToastedDictionary();
 
-                String json = await FileIO.ReadTextAsync(toastedFile);
-
+                json = json.Trim();
+                if (String.IsNullOrEmpty(json))
+                    return new ToastedDictionary();
+                
+                // parse
                 using (MemoryStream ms = new MemoryStream())
                 {
                     using (StreamWriter wr = new StreamWriter(ms))
@@ -380,11 +404,21 @@ namespace WhirlMonData
                 var sr = new StreamReader(ms);
                 String json = sr.ReadToEnd();
 
-                // Write To File
-                Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
-                StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
+                Semaphore semFile = new Semaphore(1, 1, "toasted.json.sem");
+                if (!semFile.WaitOne(2000))
+                    throw new Exception("Failed to accquire toast access Semaphore");
+                try
+                {
+                    // Write To File
+                    Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                    StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
 
-                await FileIO.WriteTextAsync(toastedFile, json);
+                    await FileIO.WriteTextAsync(toastedFile, json);
+                }
+                finally
+                {
+                    semFile.Release();
+                }
 
 
             }
