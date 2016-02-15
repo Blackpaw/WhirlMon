@@ -137,6 +137,11 @@
                             <!-- Ignore own posts-->
                             <ToggleSwitch x:Name="cbIgnoreOwnPosts" IsOn="{x:Bind CFG_IgnoreOwnPosts, Mode=TwoWay}">Ignore own Posts</ToggleSwitch>
                             <ToggleSwitch IsOn="{x:Bind CFG_ShowDebugToasts, Mode=TwoWay}">Show Debug Notifications</ToggleSwitch>
+                            <Line X1="0" Y1="0" X2="1" Y2="0" Stretch="Fill" Stroke="Gray" Margin="4"/>
+                            <TextBlock x:Name="tbVersion">
+                                <Run Text="Version:"/>
+                                <Run Text="{x:Bind CFG_Version}"/>
+                            </TextBlock>
                         </StackPanel>
                     </Grid>
                 </SplitView.Content>

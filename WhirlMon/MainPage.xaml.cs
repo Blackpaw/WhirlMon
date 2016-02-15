@@ -20,6 +20,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using WhirlMonData;
+using Windows.ApplicationModel;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -59,6 +60,19 @@ namespace WhirlMonApp
 
 
             ShowHome();
+        }
+
+        string CFG_Version
+        {
+            get
+            {
+                Package package = Package.Current;
+                PackageVersion pv = package.Id.Version;
+                String ApplicationVersion = $"{pv.Major}.{pv.Minor}.{pv.Build}.{pv.Revision}";
+
+                return ApplicationVersion;
+
+            }
         }
 
         string CFG_APIKey
