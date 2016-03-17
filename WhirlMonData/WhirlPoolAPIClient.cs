@@ -332,29 +332,31 @@ namespace WhirlMonData
         class ToastedDictionary : Dictionary<int, string> { }
 
 
+        const string TOASTED_SEM = "toasted.json.sem";
+
         static private async Task<ToastedDictionary> ReadToasted()
         {
 
             try
             {
-                Semaphore semFile = new Semaphore(1, 1, "toasted.json.sem");
-
-                if (!semFile.WaitOne(2000))
-                    throw new Exception("Failed to accquire toast access Semaphore");
-
                 String json = null;
-                try
+                using (Semaphore semFile = new Semaphore(1, 1, TOASTED_SEM))
                 {
-                    Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
-                    StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
-                    if (!toastedFile.IsAvailable)
-                        return new ToastedDictionary();
+                    if (!semFile.WaitOne(2000))
+                        throw new Exception("Failed to accquire toast access Semaphore");
+                    try
+                    {
+                        Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                        StorageFile toastedFile = await temporaryFolder.GetFileAsync("toasted.json");
+                        if (!toastedFile.IsAvailable)
+                            return new ToastedDictionary();
 
-                    json = await FileIO.ReadTextAsync(toastedFile);
-                }
-                finally
-                {
-                    semFile.Release();
+                        json = await FileIO.ReadTextAsync(toastedFile);
+                    }
+                    finally
+                    {
+                        semFile.Release();
+                    }
                 }
 
                 // Sanity checks
@@ -404,20 +406,22 @@ namespace WhirlMonData
                 var sr = new StreamReader(ms);
                 String json = sr.ReadToEnd();
 
-                Semaphore semFile = new Semaphore(1, 1, "toasted.json.sem");
-                if (!semFile.WaitOne(2000))
-                    throw new Exception("Failed to accquire toast access Semaphore");
-                try
+                using (Semaphore semFile = new Semaphore(1, 1, TOASTED_SEM))
                 {
-                    // Write To File
-                    Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
-                    StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
+                    if (!semFile.WaitOne(2000))
+                        throw new Exception("Failed to accquire toast access Semaphore");
+                    try
+                    {
+                        // Write To File
+                        Windows.Storage.StorageFolder temporaryFolder = ApplicationData.Current.TemporaryFolder;
+                        StorageFile toastedFile = await temporaryFolder.CreateFileAsync("toasted.json", CreationCollisionOption.ReplaceExisting);
 
-                    await FileIO.WriteTextAsync(toastedFile, json);
-                }
-                finally
-                {
-                    semFile.Release();
+                        await FileIO.WriteTextAsync(toastedFile, json);
+                    }
+                    finally
+                    {
+                        semFile.Release();
+                    }
                 }
 
 
